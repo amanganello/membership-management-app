@@ -20,7 +20,7 @@ An internal member-management tool for fitness business staff. Designed as an MV
 
 ---
 
-## Task 1: Member Check-in Data Flow
+## Member Check-in Data Flow
 
 ### Flow Description
 
@@ -80,7 +80,7 @@ sequenceDiagram
 
 ---
 
-## Task 2: Solution Diagrams
+## Solution Diagrams
 
 ### Local Development (Docker Compose)
 
@@ -174,53 +174,9 @@ graph TB
 
 ---
 
-## Task 3: "If More Time" Improvements
+## Additional Documentation
 
-### 1. � Add Staff Authentication
-
-**Priority:** Critical (currently skipped for MVP)
-
-**Implementation:**
-- Add login page with email/password
-- JWT tokens stored in httpOnly cookies
-- Protect all `/api/*` routes with auth middleware
-- Add staff roles (Admin, Front Desk)
-
-```typescript
-// Future middleware
-app.use('/api', authMiddleware);
-```
-
----
-
-### 2. � Check-in Analytics Dashboard
-
-**Why:** Business value for gym owners
-
-**Features:**
-- Daily/weekly/monthly check-in counts
-- Peak hours visualization (bar chart)
-- Member visit frequency report
-- Exportable CSV reports
-
-```sql
--- Example query
-SELECT DATE(checked_in_at), COUNT(*) 
-FROM checkins 
-GROUP BY DATE(checked_in_at);
-```
-
----
-
-### 3. � Member Visit Notifications
-
-**Why:** Engagement and retention
-
-**Features:**
-- Email/SMS when member hasn't visited in 7+ days
-- Welcome notification on check-in
-- Birthday/anniversary messages
-- Integration with SendGrid or AWS SES
+For detailed technical specifications including database schema, business rules, validation rules, concurrency control, and future improvements, see [TECH_SPEC.md](file:///Users/amanganello/Documents/Membership%20Managment%20app/TECH_SPEC.md).
 
 ---
 
