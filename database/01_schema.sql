@@ -87,7 +87,7 @@ SELECT
 FROM memberships m
 JOIN members mb ON m.member_id = mb.id
 JOIN plans p ON m.plan_id = p.id
-WHERE m.end_date > CURRENT_DATE;
+WHERE m.end_date >= CURRENT_DATE;
 
 -- ============================================
 -- AUTO-UPDATE TIMESTAMPS
