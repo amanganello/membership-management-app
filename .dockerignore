@@ -1,0 +1,20 @@
+# .dockerignore
+
+# Ignore node_modules in all directories
+**/node_modules
+**/npm-debug.log
+
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+
+# Documentation (not needed in containers)
+*.md
+!README.md
+
+# Temporary files
+**/*.log
+**/*.tmp
