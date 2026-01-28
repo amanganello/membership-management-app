@@ -22,7 +22,8 @@ INSERT INTO members (name, email, join_date) VALUES
   ('Jane Smith', 'jane.smith@example.com', '2026-01-15'),
   ('Mike Johnson', 'mike.j@example.com', '2025-12-01'),
   ('Sarah Williams', 'sarah.w@example.com', '2026-01-20'),
-  ('Tom Brown', 'tom.brown@example.com', '2025-11-10');
+  ('Tom Brown', 'tom.brown@example.com', '2025-11-10'),
+  ('Alex Turner', 'alex.turner@example.com', CURRENT_DATE - INTERVAL '30 days');  -- Edge case: expires today
 
 SELECT 'Seeded ' || COUNT(*) || ' members' AS status FROM members;
 
@@ -54,6 +55,12 @@ INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
    '2025-11-10', '2026-01-10');
 
 -- Sarah Williams: NO MEMBERSHIP (for testing check-in denial)
+
+-- Alex Turner: EDGE CASE - Membership expires exactly TODAY (should still be ACTIVE)
+INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
+  ((SELECT id FROM members WHERE email = 'alex.turner@example.com'),
+   (SELECT id FROM plans WHERE name = 'Basic Monthly'),
+   CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE);  -- Expires today!
 
 SELECT 'Seeded ' || COUNT(*) || ' memberships' AS status FROM memberships;
 
