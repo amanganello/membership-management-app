@@ -125,7 +125,10 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql';
 
--- Applied to: members, plans, memberships
+CREATE TRIGGER update_members_modtime BEFORE UPDATE ON members FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_plans_modtime BEFORE UPDATE ON plans FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_memberships_modtime BEFORE UPDATE ON memberships FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
 ```
 
 **Helper View:**
