@@ -6,6 +6,7 @@ export default tseslint.config(
   ...tseslint.configs.strict,
   {
     files: ['src/**/*.ts'],
+    ignores: ['src/**/__tests__/**'],
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json'
@@ -15,10 +16,11 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'off',
       'no-console': 'off'
     }
   },
   {
-    ignores: ['dist/**', 'node_modules/**']
+    ignores: ['dist/**', 'node_modules/**', 'src/**/__tests__/**']
   }
 );

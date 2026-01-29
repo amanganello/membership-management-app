@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Backend API for fitness member management",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
@@ -31,6 +32,7 @@
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.54.0"
   }
 }
