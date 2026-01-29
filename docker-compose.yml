@@ -1,7 +1,8 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:16.6-alpine
     container_name: memberapp-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: memberapp
       POSTGRES_USER: postgres
@@ -18,18 +19,33 @@ services:
       retries: 5
 
   backend:
-    build: ./backend
-    container_name: memberapp-api
+    build:
+      context: ./backend
+      args:
+        NODE_ENV: production
+    container_name: back-end
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/memberapp
       PORT: 3000
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    container_name: front-end
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
-
-
