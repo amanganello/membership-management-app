@@ -149,6 +149,223 @@ WHERE m.end_date >= CURRENT_DATE;
 
 ---
 
+## API Endpoints
+
+Base URL: `http://localhost:3000/api`
+
+### Health Check
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Server health status |
+
+**Response:** `200 OK`
+```json
+{ "status": "ok", "timestamp": "2026-01-28T12:00:00.000Z" }
+```
+
+---
+
+### Members
+
+#### Create Member
+`POST /api/members`
+
+**Request Body:**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": "uuid",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "joinDate": "2026-01-28",
+  "createdAt": "2026-01-28T12:00:00.000Z",
+  "updatedAt": "2026-01-28T12:00:00.000Z"
+}
+```
+
+**Errors:**
+- `400` - Validation error (invalid email, empty name)
+- `409` - Email already exists
+
+---
+
+#### List Members
+`GET /api/members`
+
+**Query Parameters:**
+- `q` (optional): Search by name or email
+
+**Response:** `200 OK`
+```json
+[
+  { "id": "uuid", "name": "John Doe", "email": "john@example.com", ... }
+]
+```
+
+---
+
+#### Get Member Summary
+`GET /api/members/:id`
+
+**Response:** `200 OK`
+```json
+{
+  "id": "uuid",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "joinDate": "2026-01-01",
+  "activeMembership": {
+    "id": "uuid",
+    "planName": "Premium Monthly",
+    "startDate": "2026-01-01",
+    "endDate": "2026-12-31"
+  },
+  "lastCheckinAt": "2026-01-28T10:00:00.000Z",
+  "checkinCount30Days": 12
+}
+```
+
+**Errors:**
+- `400` - Invalid UUID format
+- `404` - Member not found
+
+---
+
+### Plans
+
+#### List Plans
+`GET /api/plans`
+
+**Response:** `200 OK`
+```json
+[
+  { "id": "uuid", "name": "Basic Monthly", "monthlyCost": 29.99, ... },
+  { "id": "uuid", "name": "Premium Monthly", "monthlyCost": 59.99, ... }
+]
+```
+
+---
+
+### Memberships
+
+#### Assign Membership
+`POST /api/memberships`
+
+**Request Body:**
+```json
+{
+  "memberId": "uuid",
+  "planId": "uuid",
+  "startDate": "2026-01-01",
+  "endDate": "2026-12-31"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": "uuid",
+  "memberId": "uuid",
+  "planId": "uuid",
+  "startDate": "2026-01-01",
+  "endDate": "2026-12-31",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
+
+**Errors:**
+- `400` - Validation error (invalid dates, start > end)
+- `404` - Member or Plan not found
+- `409` - Overlapping membership exists
+
+---
+
+#### Cancel Membership
+`PATCH /api/memberships/:id/cancel`
+
+**Request Body:**
+```json
+{
+  "cancelDate": "2026-06-15"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "id": "uuid",
+  "memberId": "uuid",
+  "planId": "uuid",
+  "startDate": "2026-01-01",
+  "endDate": "2026-06-15",
+  ...
+}
+```
+
+**Errors:**
+- `400` - Cancel date in the past, membership already expired
+- `404` - Membership not found
+
+---
+
+### Check-ins
+
+#### Record Check-in
+`POST /api/checkins`
+
+**Request Body:**
+```json
+{
+  "memberId": "uuid"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": "uuid",
+  "memberId": "uuid",
+  "checkedInAt": "2026-01-28T10:00:00.000Z"
+}
+```
+
+**Errors:**
+- `400` - Member has no active membership (check-in denied)
+- `404` - Member not found
+
+---
+
+### Error Response Format
+
+All errors return a consistent format:
+```json
+{
+  "error": {
+    "message": "Error description",
+    "code": "ERROR_CODE",
+    "statusCode": 400
+  }
+}
+```
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `VALIDATION_ERROR` | 400 | Invalid input data |
+| `NOT_FOUND` | 404 | Resource doesn't exist |
+| `CONFLICT` | 409 | Duplicate or overlapping resource |
+| `INTERNAL_ERROR` | 500 | Server error |
+
+---
+
 ## Business Rules
 
 ### 1. Active Membership Definition
