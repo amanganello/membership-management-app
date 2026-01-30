@@ -1,8 +1,11 @@
-import express from 'express';
+import express, { type Request } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { pinoHttp } from 'pino-http';
 import routes from './routes/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
+import logger from './lib/logger.js';
 
 dotenv.config();
 
@@ -10,6 +13,11 @@ const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 // Middleware
+app.use(requestIdMiddleware);
+app.use(pinoHttp({
+    logger,
+    genReqId: (req: Request) => req.id,
+}));
 app.use(cors());
 app.use(express.json());
 
@@ -26,8 +34,7 @@ app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📋 API endpoints at http://localhost:${PORT}/api`);
+    logger.info({ port: PORT }, 'Server started');
 });
 
 export default app;

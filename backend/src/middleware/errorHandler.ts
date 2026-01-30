@@ -1,21 +1,29 @@
 import type { Request, Response, NextFunction } from 'express';
 import { AppError } from '../types/index.js';
+import logger from '../lib/logger.js';
 
 interface ErrorResponse {
     error: {
         message: string;
         code?: string;
         statusCode: number;
+        requestId?: string;
     };
 }
 
 export const errorHandler = (
     err: Error,
-    _req: Request,
+    req: Request,
     res: Response<ErrorResponse>,
     _next: NextFunction
 ): void => {
-    console.error('❌ Error:', err.message);
+    // Log with full context
+    logger.error({
+        err,
+        requestId: req.id,
+        method: req.method,
+        url: req.url,
+    }, 'Request failed');
 
     // Handle our custom AppError
     if (err instanceof AppError) {
@@ -23,7 +31,8 @@ export const errorHandler = (
             error: {
                 message: err.message,
                 code: err.code,
-                statusCode: err.statusCode
+                statusCode: err.statusCode,
+                requestId: req.id as string,
             }
         });
         return;
@@ -35,7 +44,8 @@ export const errorHandler = (
             error: {
                 message: 'Resource already exists',
                 code: 'DUPLICATE',
-                statusCode: 409
+                statusCode: 409,
+                requestId: req.id as string,
             }
         });
         return;
@@ -47,7 +57,8 @@ export const errorHandler = (
             error: {
                 message: 'Referenced resource does not exist',
                 code: 'FOREIGN_KEY_VIOLATION',
-                statusCode: 400
+                statusCode: 400,
+                requestId: req.id as string,
             }
         });
         return;
@@ -58,7 +69,8 @@ export const errorHandler = (
         error: {
             message: 'Internal server error',
             code: 'INTERNAL_ERROR',
-            statusCode: 500
+            statusCode: 500,
+            requestId: req.id as string,
         }
     });
 };
