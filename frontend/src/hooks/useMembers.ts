@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { queryKeys } from '../lib/queryKeys';
+import { api } from '@/services/api';
+import { queryKeys } from '@/lib/queryKeys';
 import type { CreateMemberDto } from '@memberapp/shared';
 
 export function useMembers(search?: string) {

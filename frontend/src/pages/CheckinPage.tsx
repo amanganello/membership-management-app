@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useMembers } from '../hooks/useMembers';
-import { useCreateCheckin } from '../hooks/useCheckins';
+import { useMembers } from '@/hooks/useMembers';
+import { useCreateCheckin } from '@/hooks/useCheckins';
 import type { Member } from '@memberapp/shared';
 
 export function CheckinPage() {
@@ -87,8 +87,8 @@ export function CheckinPage() {
                     {message && (
                         <div
                             className={`mt-4 p-4 rounded-lg ${message.type === 'success'
-                                    ? 'bg-green-50 text-green-800'
-                                    : 'bg-red-50 text-red-800'
+                                ? 'bg-green-50 text-green-800'
+                                : 'bg-red-50 text-red-800'
                                 }`}
                         >
                             {message.text}

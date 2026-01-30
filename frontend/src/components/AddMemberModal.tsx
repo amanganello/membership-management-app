@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCreateMember } from '../hooks/useMembers';
+import { useCreateMember } from '@/hooks/useMembers';
 
 interface AddMemberModalProps {
     isOpen: boolean;

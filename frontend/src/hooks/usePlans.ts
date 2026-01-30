@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { queryKeys } from '../lib/queryKeys';
+import { api } from '@/services/api';
+import { queryKeys } from '@/lib/queryKeys';
 
 export function usePlans() {
     return useQuery({

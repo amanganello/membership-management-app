@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 
 const navItems = [
     { to: '/', label: 'Members', icon: '👥' },

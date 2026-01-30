@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useMembers } from '../hooks/useMembers';
-import { MemberTable } from '../components/MemberTable';
-import { AddMemberModal } from '../components/AddMemberModal';
-import { MemberSummaryModal } from '../components/MemberSummaryModal';
+import { useMembers } from '@/hooks/useMembers';
+import { MemberTable } from '@/components/MemberTable';
+import { AddMemberModal } from '@/components/AddMemberModal';
+import { MemberSummaryModal } from '@/components/MemberSummaryModal';
 import type { Member } from '@memberapp/shared';
 
 export function MembersPage() {
