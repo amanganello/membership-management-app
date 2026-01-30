@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { queryKeys } from '../lib/queryKeys';
 import type { CreateMemberDto } from '@memberapp/shared';
 
 export function useMembers(search?: string) {
     return useQuery({
-        queryKey: ['members', search],
+        queryKey: queryKeys.members.list(search),
         queryFn: () => api.members.list(),
         // Filter client-side for now (backend supports ?q= param)
         select: (members) => {
@@ -25,7 +26,7 @@ export function useCreateMember() {
     return useMutation({
         mutationFn: (data: CreateMemberDto) => api.members.create(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['members'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
         },
     });
 }
