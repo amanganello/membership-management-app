@@ -1,0 +1,8 @@
+{
+    "name": "@memberapp/shared",
+    "version": "1.0.0",
+    "description": "Shared types for Member Management App",
+    "main": "src/index.ts",
+    "types": "src/index.ts",
+    "scripts": {}
+}
