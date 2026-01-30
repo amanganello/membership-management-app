@@ -48,8 +48,8 @@ describe('memberService', () => {
             name: 'John Doe',
             email: 'john@example.com',
             joinDate: '2026-01-28',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: '2026-01-28T00:00:00.000Z',
+            updatedAt: '2026-01-28T00:00:00.000Z',
         };
 
         it('should create a member with valid data', async () => {
@@ -76,8 +76,8 @@ describe('memberService', () => {
 
     describe('list()', () => {
         const members = [
-            { id: 'uuid-1', name: 'Alice', email: 'alice@example.com', joinDate: '2026-01-01', createdAt: new Date(), updatedAt: new Date() },
-            { id: 'uuid-2', name: 'Bob', email: 'bob@example.com', joinDate: '2026-01-02', createdAt: new Date(), updatedAt: new Date() },
+            { id: 'uuid-1', name: 'Alice', email: 'alice@example.com', joinDate: '2026-01-01', createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' },
+            { id: 'uuid-2', name: 'Bob', email: 'bob@example.com', joinDate: '2026-01-02', createdAt: '2026-01-02T00:00:00.000Z', updatedAt: '2026-01-02T00:00:00.000Z' },
         ];
 
         it('should return all members when no search query is provided', async () => {
@@ -116,8 +116,8 @@ describe('memberService', () => {
             name: 'John Doe',
             email: 'john@example.com',
             joinDate: '2026-01-01',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
         };
 
         const activeMembership = {

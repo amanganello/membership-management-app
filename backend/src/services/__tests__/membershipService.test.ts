@@ -53,8 +53,8 @@ describe('membershipService', () => {
             planId: 'plan-uuid',
             startDate: '2026-01-01',
             endDate: '2026-12-31',
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
         };
 
         it('should create membership with valid data', async () => {
@@ -134,8 +134,8 @@ describe('membershipService', () => {
             planId: 'plan-uuid',
             startDate: '2026-01-01',
             endDate: futureDate,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: '2026-01-01T00:00:00.000Z',
+            updatedAt: '2026-01-01T00:00:00.000Z',
         };
 
         it('should cancel an active membership', async () => {

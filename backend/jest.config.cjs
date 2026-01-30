@@ -5,12 +5,14 @@ module.exports = {
     extensionsToTreatAsEsm: ['.ts'],
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
+        '^@memberapp/shared$': '<rootDir>/../shared/src/index.ts',
     },
     transform: {
         '^.+\\.tsx?$': [
             'ts-jest',
             {
                 useESM: true,
+                isolatedModules: true,
             },
         ],
     },

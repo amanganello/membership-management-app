@@ -40,7 +40,7 @@ describe('checkinService', () => {
         const createdCheckin = {
             id: 'checkin-uuid',
             memberId: 'member-uuid',
-            checkedInAt: new Date(),
+            checkedInAt: '2026-01-28T10:00:00.000Z',
         };
 
         it('should record check-in for member with active membership', async () => {
