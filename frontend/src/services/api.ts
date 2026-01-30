@@ -1,3 +1,4 @@
+import axios, { AxiosError, type AxiosInstance } from 'axios';
 import type {
     Member,
     MemberSummary,
@@ -10,8 +11,6 @@ import type {
     CreateCheckinDto,
     ApiErrorResponse,
 } from '@memberapp/shared';
-
-const API_BASE = '/api';
 
 // Custom error class for API errors
 export class ApiRequestError extends Error {
@@ -33,58 +32,46 @@ export class ApiRequestError extends Error {
     }
 }
 
-// Generic fetch wrapper with error handling
-async function request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-): Promise<T> {
-    const url = `${API_BASE}${endpoint}`;
+// Create Axios instance with base configuration
+const apiClient: AxiosInstance = axios.create({
+    baseURL: '/api',
+    timeout: 10000, // 10 second timeout
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 
-    const config: RequestInit = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-        },
-        ...options,
-    };
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError<ApiErrorResponse>) => {
+        if (error.response) {
+            // Server responded with error status
+            const errorData = error.response.data?.error || {
+                message: 'An unexpected error occurred',
+                code: 'UNKNOWN_ERROR',
+                statusCode: error.response.status,
+            };
 
-    try {
-        const response = await fetch(url, config);
-
-        if (!response.ok) {
-            const errorData: ApiErrorResponse = await response.json().catch(() => ({
-                error: {
-                    message: 'An unexpected error occurred',
-                    code: 'UNKNOWN_ERROR',
-                    statusCode: response.status,
-                },
-            }));
-
-            console.error(`API Error [${response.status}]:`, errorData.error);
+            console.error(`API Error [${error.response.status}]:`, errorData);
 
             throw new ApiRequestError(
-                errorData.error.statusCode,
-                errorData.error.code,
-                errorData.error.message,
-                errorData.error.details
+                errorData.statusCode,
+                errorData.code,
+                errorData.message,
+                errorData.details
             );
+        } else if (error.request) {
+            // Request made but no response received
+            console.error('Network Error:', error.message);
+            throw new ApiRequestError(0, 'NETWORK_ERROR', 'Unable to connect to the server');
+        } else {
+            // Error in request configuration
+            console.error('Request Error:', error.message);
+            throw new ApiRequestError(0, 'REQUEST_ERROR', error.message);
         }
-
-        return response.json();
-    } catch (error) {
-        if (error instanceof ApiRequestError) {
-            throw error;
-        }
-
-        // Network or other errors
-        console.error('Network Error:', error);
-        throw new ApiRequestError(
-            0,
-            'NETWORK_ERROR',
-            'Unable to connect to the server'
-        );
     }
-}
+);
 
 // ============ Members API ============
 
@@ -92,25 +79,25 @@ export const membersApi = {
     /**
      * Get all members
      */
-    list: (): Promise<Member[]> => {
-        return request<Member[]>('/members');
+    list: async (): Promise<Member[]> => {
+        const { data } = await apiClient.get<Member[]>('/members');
+        return data;
     },
 
     /**
      * Get member summary by ID (includes active membership, check-in stats)
      */
-    getSummary: (id: string): Promise<MemberSummary> => {
-        return request<MemberSummary>(`/members/${id}`);
+    getSummary: async (id: string): Promise<MemberSummary> => {
+        const { data } = await apiClient.get<MemberSummary>(`/members/${id}`);
+        return data;
     },
 
     /**
      * Create a new member
      */
-    create: (data: CreateMemberDto): Promise<Member> => {
-        return request<Member>('/members', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
+    create: async (payload: CreateMemberDto): Promise<Member> => {
+        const { data } = await apiClient.post<Member>('/members', payload);
+        return data;
     },
 };
 
@@ -120,8 +107,9 @@ export const plansApi = {
     /**
      * Get all available plans
      */
-    list: (): Promise<Plan[]> => {
-        return request<Plan[]>('/plans');
+    list: async (): Promise<Plan[]> => {
+        const { data } = await apiClient.get<Plan[]>('/plans');
+        return data;
     },
 };
 
@@ -131,21 +119,17 @@ export const membershipsApi = {
     /**
      * Assign a membership to a member
      */
-    assign: (data: AssignMembershipDto): Promise<Membership> => {
-        return request<Membership>('/memberships', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
+    assign: async (payload: AssignMembershipDto): Promise<Membership> => {
+        const { data } = await apiClient.post<Membership>('/memberships', payload);
+        return data;
     },
 
     /**
      * Cancel a membership
      */
-    cancel: (id: string, data: CancelMembershipDto): Promise<Membership> => {
-        return request<Membership>(`/memberships/${id}/cancel`, {
-            method: 'PATCH',
-            body: JSON.stringify(data),
-        });
+    cancel: async (id: string, payload: CancelMembershipDto): Promise<Membership> => {
+        const { data } = await apiClient.patch<Membership>(`/memberships/${id}/cancel`, payload);
+        return data;
     },
 };
 
@@ -155,11 +139,9 @@ export const checkinsApi = {
     /**
      * Create a check-in for a member
      */
-    create: (data: CreateCheckinDto): Promise<Checkin> => {
-        return request<Checkin>('/checkins', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
+    create: async (payload: CreateCheckinDto): Promise<Checkin> => {
+        const { data } = await apiClient.post<Checkin>('/checkins', payload);
+        return data;
     },
 };
 
@@ -170,5 +152,8 @@ export const api = {
     memberships: membershipsApi,
     checkins: checkinsApi,
 };
+
+// Export the axios instance for advanced usage (e.g., adding auth headers)
+export { apiClient };
 
 export default api;
