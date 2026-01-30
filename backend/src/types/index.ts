@@ -1,76 +1,19 @@
-// Domain Types for Fitness Member Management
+// Re-export shared types
+export type {
+    Member,
+    Plan,
+    Membership,
+    Checkin,
+    MemberSummary,
+    CreateMemberDto,
+    AssignMembershipDto,
+    CancelMembershipDto,
+    CreateCheckinDto,
+    ApiErrorResponse,
+} from '@memberapp/shared';
 
-export interface Member {
-    id: string;
-    name: string;
-    email: string;
-    joinDate: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+// Backend-specific error classes (not shared)
 
-export interface Plan {
-    id: string;
-    name: string;
-    monthlyCost: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface Membership {
-    id: string;
-    memberId: string;
-    planId: string;
-    startDate: string;
-    endDate: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface Checkin {
-    id: string;
-    memberId: string;
-    checkedInAt: Date;
-}
-
-// API Response Types
-export interface MemberSummary {
-    id: string;
-    name: string;
-    email: string;
-    joinDate: string;
-    activeMembership: {
-        id: string;
-        planName: string;
-        startDate: string;
-        endDate: string;
-    } | null;
-    lastCheckinAt: string | null;
-    checkinCount30Days: number;
-}
-
-// Request DTOs
-export interface CreateMemberDto {
-    name: string;
-    email: string;
-}
-
-export interface AssignMembershipDto {
-    memberId: string;
-    planId: string;
-    startDate: string;
-    endDate: string;
-}
-
-export interface CancelMembershipDto {
-    cancelDate: string;
-}
-
-export interface CreateCheckinDto {
-    memberId: string;
-}
-
-// Error Types
 export class AppError extends Error {
     constructor(
         public statusCode: number,
