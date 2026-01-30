@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useMemberSummary } from '../hooks/useMemberSummary';
-import { usePlans } from '../hooks/usePlans';
-import { useAssignMembership, useCancelMembership } from '../hooks/useMemberships';
+import { useMemberSummary } from '@/hooks/useMemberSummary';
+import { usePlans } from '@/hooks/usePlans';
+import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
 
 interface MemberSummaryModalProps {
     memberId: string | null;

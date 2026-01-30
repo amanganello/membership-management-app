@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemberTable } from '../MemberTable';
+import { MemberTable } from '@/components/MemberTable';
 import type { Member } from '@memberapp/shared';
 
 const mockMembers: Member[] = [
