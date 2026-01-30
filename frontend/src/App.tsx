@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from './components/Layout';
-import { DashboardPage } from './pages/DashboardPage';
 import { MembersPage } from './pages/MembersPage';
 import { CheckinPage } from './pages/CheckinPage';
 import './index.css';
@@ -21,7 +20,7 @@ function App() {
       <BrowserRouter>
         <Layout>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/" element={<MembersPage />} />
             <Route path="/members" element={<MembersPage />} />
             <Route path="/checkin" element={<CheckinPage />} />
           </Routes>
