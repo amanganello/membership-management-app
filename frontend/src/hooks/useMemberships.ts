@@ -21,8 +21,8 @@ export function useCancelMembership() {
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: CancelMembershipDto }) =>
             api.memberships.cancel(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['member'] });
+        onSuccess: (membership) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.members.detail(membership.memberId) });
             queryClient.invalidateQueries({ queryKey: queryKeys.members.all });
         },
     });

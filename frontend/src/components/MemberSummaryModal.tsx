@@ -93,21 +93,29 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 {member.activeMembership ? (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Active
-                                            </span>
+                                            {new Date(member.activeMembership.endDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0] ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                    Ends Today
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    Active
+                                                </span>
+                                            )}
                                             <span className="font-medium">{member.activeMembership.planName}</span>
                                         </div>
                                         <p className="text-sm text-gray-500">
                                             {member.activeMembership.startDate} → {member.activeMembership.endDate}
                                         </p>
-                                        <button
-                                            onClick={handleCancel}
-                                            disabled={cancelMembership.isPending}
-                                            className="text-sm text-red-600 hover:text-red-700"
-                                        >
-                                            {cancelMembership.isPending ? 'Canceling...' : 'Cancel Membership'}
-                                        </button>
+                                        {new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
+                                            <button
+                                                onClick={handleCancel}
+                                                disabled={cancelMembership.isPending}
+                                                className="text-sm text-red-600 hover:text-red-700"
+                                            >
+                                                {cancelMembership.isPending ? 'Canceling...' : 'Cancel Membership'}
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <div>

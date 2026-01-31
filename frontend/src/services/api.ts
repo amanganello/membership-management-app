@@ -77,10 +77,11 @@ apiClient.interceptors.response.use(
 
 export const membersApi = {
     /**
-     * Get all members
+     * Get all members, optionally filtered by search query
      */
-    list: async (): Promise<Member[]> => {
-        const { data } = await apiClient.get<Member[]>('/members');
+    list: async (search?: string): Promise<Member[]> => {
+        const params = search ? { q: search } : undefined;
+        const { data } = await apiClient.get<Member[]>('/members', { params });
         return data;
     },
 
