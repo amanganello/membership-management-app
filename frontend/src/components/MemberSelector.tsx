@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMembers } from '@/hooks/useMembers';
+import { useDebounce } from '@/hooks/useDebounce';
 import { SearchInput } from '@/components/SearchInput';
 import type { Member } from '@memberapp/shared';
 
@@ -15,7 +16,8 @@ export function MemberSelector({
     label = 'Search Member'
 }: MemberSelectorProps) {
     const [search, setSearch] = useState('');
-    const { data: members = [], isLoading } = useMembers(search);
+    const debouncedSearch = useDebounce(search, 300);
+    const { data: members = [], isLoading } = useMembers(debouncedSearch);
 
     const handleSelect = (member: Member) => {
         onSelect(member);

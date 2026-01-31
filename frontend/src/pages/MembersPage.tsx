@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMembers } from '@/hooks/useMembers';
+import { useDebounce } from '@/hooks/useDebounce';
 import { MemberTable } from '@/components/MemberTable';
 import { AddMemberModal } from '@/components/AddMemberModal';
 import { MemberSummaryModal } from '@/components/MemberSummaryModal';
@@ -8,10 +9,11 @@ import type { Member } from '@memberapp/shared';
 
 export function MembersPage() {
     const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 300);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
-    const { data: members = [], isLoading } = useMembers(search);
+    const { data: members = [], isLoading } = useMembers(debouncedSearch);
 
     const handleRowClick = (member: Member) => {
         setSelectedMemberId(member.id);
