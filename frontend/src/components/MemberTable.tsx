@@ -1,4 +1,5 @@
 import type { Member } from '@memberapp/shared';
+import { formatDate } from '@/lib/utils';
 
 interface MemberTableProps {
     members: Member[];
@@ -53,7 +54,7 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
                                 <div className="text-sm text-gray-500">{member.email}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {new Date(member.joinDate).toLocaleDateString()}
+                                {formatDate(member.joinDate)}
                             </td>
                         </tr>
                     ))}

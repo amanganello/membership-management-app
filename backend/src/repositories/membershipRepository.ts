@@ -9,7 +9,7 @@ interface ActiveMembershipInfo {
 }
 
 export const membershipRepository = {
-    async create(data: AssignMembershipDto): Promise<Membership> {
+    async create(data: AssignMembershipDto & { endDate: string }): Promise<Membership> {
         const result = await pool.query(
             `INSERT INTO memberships (member_id, plan_id, start_date, end_date) 
        VALUES ($1, $2, $3, $4) 

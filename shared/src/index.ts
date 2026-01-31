@@ -21,6 +21,8 @@ export interface Plan {
     id: string;
     name: string;
     monthlyCost: string; // PostgreSQL numeric comes as string
+    durationValue: number;
+    durationUnit: 'day' | 'month' | 'year';
     createdAt: string;
     updatedAt: string;
 }
@@ -69,7 +71,7 @@ export interface AssignMembershipDto {
     memberId: string;
     planId: string;
     startDate: string; // YYYY-MM-DD
-    endDate: string;   // YYYY-MM-DD
+    endDate?: string;  // YYYY-MM-DD (Optional - calculated from plan duration if omitted)
 }
 
 export interface CancelMembershipDto {

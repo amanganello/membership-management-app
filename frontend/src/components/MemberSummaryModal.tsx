@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
+import { formatDate, formatDateTime } from '@/lib/utils';
 
 interface MemberSummaryModalProps {
     memberId: string | null;
@@ -83,7 +84,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 <h2 className="text-xl font-semibold text-gray-900">{member.name}</h2>
                                 <p className="text-gray-500">{member.email}</p>
                                 <p className="text-sm text-gray-400 mt-1">
-                                    Joined: {new Date(member.joinDate).toLocaleDateString()}
+                                    Joined: {formatDate(member.joinDate)}
                                 </p>
                             </div>
 
@@ -105,7 +106,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                             <span className="font-medium">{member.activeMembership.planName}</span>
                                         </div>
                                         <p className="text-sm text-gray-500">
-                                            {member.activeMembership.startDate} → {member.activeMembership.endDate}
+                                            {formatDate(member.activeMembership.startDate)} → {formatDate(member.activeMembership.endDate)}
                                         </p>
                                         {new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
                                             <button
@@ -139,37 +140,53 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
                                         <select
                                             value={selectedPlanId}
-                                            onChange={(e) => setSelectedPlanId(e.target.value)}
+                                            onChange={(e) => {
+                                                setSelectedPlanId(e.target.value);
+                                                // Reset calculated date when plan changes
+                                            }}
                                             className="w-full px-3 py-2 border rounded-lg"
+                                            required
                                         >
                                             <option value="">Select a plan</option>
                                             {plans?.map((plan) => (
                                                 <option key={plan.id} value={plan.id}>
-                                                    {plan.name} - ${plan.monthlyCost}/mo
+                                                    {plan.name} - ${plan.monthlyCost}
+                                                    {plan.durationUnit !== 'month' ? ` / ${plan.durationValue} ${plan.durationUnit}` : '/mo'}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                                            <input
-                                                type="date"
-                                                value={startDate}
-                                                onChange={(e) => setStartDate(e.target.value)}
-                                                className="w-full px-3 py-2 border rounded-lg"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                                            <input
-                                                type="date"
-                                                value={endDate}
-                                                onChange={(e) => setEndDate(e.target.value)}
-                                                className="w-full px-3 py-2 border rounded-lg"
-                                            />
-                                        </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                        <input
+                                            type="date"
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                            className="w-full px-3 py-2 border rounded-lg"
+                                            required
+                                        />
                                     </div>
+
+                                    {/* Preview Duration/End Date */}
+                                    {selectedPlanId && startDate && (
+                                        <div className="bg-white/50 p-3 rounded text-sm text-gray-600">
+                                            {(() => {
+                                                const plan = plans?.find(p => p.id === selectedPlanId);
+                                                if (!plan) return null;
+
+                                                // Simple client-side preview (backend is source of truth)
+                                                // Just showing the duration here is often enough
+                                                return (
+                                                    <p>
+                                                        <span className="font-medium">Duration:</span> {' '}
+                                                        {plan.durationValue} {plan.durationUnit}{plan.durationValue > 1 ? 's' : ''}
+                                                    </p>
+                                                );
+                                            })()}
+                                        </div>
+                                    )}
+
                                     <button
                                         type="submit"
                                         disabled={assignMembership.isPending}
@@ -191,7 +208,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                     <div>
                                         <p className="text-sm text-gray-900">
                                             {member.lastCheckinAt
-                                                ? new Date(member.lastCheckinAt).toLocaleString()
+                                                ? formatDateTime(member.lastCheckinAt)
                                                 : 'Never'}
                                         </p>
                                         <p className="text-sm text-gray-500">Last check-in</p>
