@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useCreateMember } from '@/hooks/useMembers';
 
 interface AddMemberModalProps {
@@ -7,30 +6,31 @@ interface AddMemberModalProps {
 }
 
 export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [error, setError] = useState<string | null>(null);
-
     const createMember = useCreateMember();
 
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-        setError(null);
 
-        if (!name.trim() || !email.trim()) {
-            setError('Name and email are required');
+        const target = e.target as typeof e.target & {
+            nameInput: HTMLInputElement;
+            emailInput: HTMLInputElement;
+        };
+
+        const name = target.nameInput.value.trim();
+        const email = target.emailInput.value.trim();
+
+        if (!name || !email) {
             return;
         }
 
         try {
-            await createMember.mutateAsync({ name: name.trim(), email: email.trim() });
-            setName('');
-            setEmail('');
+            await createMember.mutateAsync({ name, email });
+            (e.target as HTMLFormElement).reset();
             onClose();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to create member');
+        } catch {
+            // Error is displayed via the mutation state
         }
     };
 
@@ -41,43 +41,54 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                 <div
                     className="fixed inset-0 bg-black/50 transition-opacity"
                     onClick={onClose}
+                    aria-hidden="true"
                 />
 
                 {/* Modal */}
-                <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Add New Member</h2>
+                <div
+                    className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6"
+                    role="dialog"
+                    aria-labelledby="modal-title"
+                >
+                    <h2 id="modal-title" className="text-xl font-semibold text-gray-900 mb-4">
+                        Add New Member
+                    </h2>
 
                     <form onSubmit={handleSubmit}>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="nameInput" className="block text-sm font-medium text-gray-700 mb-1">
                                     Name
                                 </label>
                                 <input
+                                    id="nameInput"
+                                    name="nameInput"
                                     type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    required
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="John Doe"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label htmlFor="emailInput" className="block text-sm font-medium text-gray-700 mb-1">
                                     Email
                                 </label>
                                 <input
+                                    id="emailInput"
+                                    name="emailInput"
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="john@example.com"
                                 />
                             </div>
 
-                            {error && (
-                                <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                                    {error}
+                            {createMember.isError && (
+                                <div role="alert" className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                                    {createMember.error instanceof Error
+                                        ? createMember.error.message
+                                        : 'Failed to create member'}
                                 </div>
                             )}
                         </div>
