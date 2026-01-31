@@ -3,6 +3,7 @@ import { useMembers } from '@/hooks/useMembers';
 import { MemberTable } from '@/components/MemberTable';
 import { AddMemberModal } from '@/components/AddMemberModal';
 import { MemberSummaryModal } from '@/components/MemberSummaryModal';
+import { SearchInput } from '@/components/SearchInput';
 import type { Member } from '@memberapp/shared';
 
 export function MembersPage() {
@@ -21,6 +22,7 @@ export function MembersPage() {
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-900">Members</h1>
                 <button
+                    type="button"
                     onClick={() => setIsAddModalOpen(true)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
@@ -28,15 +30,18 @@ export function MembersPage() {
                 </button>
             </div>
 
-            <div className="mt-6">
-                <input
-                    type="text"
+            <form onSubmit={(e) => e.preventDefault()} role="search" className="mt-6">
+                <SearchInput
+                    id="searchInput"
+                    name="searchInput"
+                    label="Search members"
+                    hideLabel
                     placeholder="Search by name or email..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="md:w-96"
                 />
-            </div>
+            </form>
 
             <div className="mt-6">
                 <MemberTable
