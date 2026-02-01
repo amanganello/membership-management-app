@@ -1,5 +1,6 @@
 import type { Member } from '@memberapp/shared';
 import { formatDate } from '@/lib/utils';
+import { UI_TEXT } from '@/lib/constants';
 
 interface MemberTableProps {
     members: Member[];
@@ -11,7 +12,7 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
     if (isLoading) {
         return (
             <div className="bg-white rounded-lg shadow p-8 text-center">
-                <div className="animate-pulse text-gray-500">Loading members...</div>
+                <div className="animate-pulse text-gray-500">{UI_TEXT.LOADING_MEMBERS}</div>
             </div>
         );
     }
@@ -19,7 +20,7 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
     if (members.length === 0) {
         return (
             <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-                No members found
+                {UI_TEXT.NO_MEMBERS_FOUND}
             </div>
         );
     }
@@ -30,13 +31,13 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
                 <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Name
+                            {UI_TEXT.NAME_HEADER}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Email
+                            {UI_TEXT.EMAIL_HEADER}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Joined
+                            {UI_TEXT.JOINED_HEADER}
                         </th>
                     </tr>
                 </thead>

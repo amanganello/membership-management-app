@@ -3,6 +3,7 @@ import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
 import { formatDate, formatDateTime } from '@/lib/utils';
+import { MEMBERSHIP_STATUS_TEXT, UI_TEXT } from '@/lib/constants';
 
 interface MemberSummaryModalProps {
     memberId: string | null;
@@ -84,23 +85,27 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 <h2 className="text-xl font-semibold text-gray-900">{member.name}</h2>
                                 <p className="text-gray-500">{member.email}</p>
                                 <p className="text-sm text-gray-400 mt-1">
-                                    Joined: {formatDate(member.joinDate)}
+                                    {UI_TEXT.JOINED_PREFIX} {formatDate(member.joinDate)}
                                 </p>
                             </div>
 
                             {/* Membership Status */}
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-medium text-gray-900 mb-2">Membership Status</h3>
+                                <h3 className="font-medium text-gray-900 mb-2">{UI_TEXT.MEMBERSHIP_STATUS_HEADER}</h3>
                                 {member.activeMembership ? (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            {new Date(member.activeMembership.endDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0] ? (
+                                            {member.activeMembership.cancelledAt ? (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    {MEMBERSHIP_STATUS_TEXT.SCHEDULED_TO_CANCEL}
+                                                </span>
+                                            ) : new Date(member.activeMembership.endDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0] ? (
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                                    Ends Today
+                                                    {MEMBERSHIP_STATUS_TEXT.ENDS_TODAY}
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    Active
+                                                    {MEMBERSHIP_STATUS_TEXT.ACTIVE}
                                                 </span>
                                             )}
                                             <span className="font-medium">{member.activeMembership.planName}</span>
@@ -108,26 +113,33 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         <p className="text-sm text-gray-500">
                                             {formatDate(member.activeMembership.startDate)} → {formatDate(member.activeMembership.endDate)}
                                         </p>
-                                        {new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
+
+                                        {member.activeMembership.cancelledAt && (
+                                            <p className="text-xs text-yellow-700 mt-1">
+                                                {UI_TEXT.ACCESS_UNTIL_PREFIX} {formatDate(member.activeMembership.endDate)}
+                                            </p>
+                                        )}
+
+                                        {!member.activeMembership.cancelledAt && new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
                                             <button
                                                 onClick={handleCancel}
                                                 disabled={cancelMembership.isPending}
                                                 className="text-sm text-red-600 hover:text-red-700"
                                             >
-                                                {cancelMembership.isPending ? 'Canceling...' : 'Cancel Membership'}
+                                                {cancelMembership.isPending ? UI_TEXT.CANCELING_BUTTON : UI_TEXT.CANCEL_MEMBERSHIP_BUTTON}
                                             </button>
                                         )}
                                     </div>
                                 ) : (
                                     <div>
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            No active membership
+                                            {UI_TEXT.NO_ACTIVE_MEMBERSHIP}
                                         </span>
                                         <button
                                             onClick={() => setShowAssignForm(!showAssignForm)}
                                             className="block mt-2 text-sm text-blue-600 hover:text-blue-700"
                                         >
-                                            + Assign Membership
+                                            {UI_TEXT.ASSIGN_MEMBERSHIP_ACTION}
                                         </button>
                                     </div>
                                 )}
@@ -199,19 +211,19 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
 
                             {/* Check-in Stats */}
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-medium text-gray-900 mb-2">Check-in Activity</h3>
+                                <h3 className="font-medium text-gray-900 mb-2">{UI_TEXT.CHECKIN_ACTIVITY_HEADER}</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <p className="text-2xl font-bold text-gray-900">{member.checkinCount30Days}</p>
-                                        <p className="text-sm text-gray-500">Last 30 days</p>
+                                        <p className="text-sm text-gray-500">{UI_TEXT.LAST_30_DAYS_LABEL}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-900">
                                             {member.lastCheckinAt
                                                 ? formatDateTime(member.lastCheckinAt)
-                                                : 'Never'}
+                                                : UI_TEXT.NEVER_CHECKED_IN}
                                         </p>
-                                        <p className="text-sm text-gray-500">Last check-in</p>
+                                        <p className="text-sm text-gray-500">{UI_TEXT.LAST_CHECKIN_LABEL}</p>
                                     </div>
                                 </div>
                             </div>

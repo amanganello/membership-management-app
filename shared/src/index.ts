@@ -33,6 +33,7 @@ export interface Membership {
     planId: string;
     startDate: string;
     endDate: string;
+    cancelledAt: string | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -55,6 +56,7 @@ export interface MemberSummary {
         planName: string;
         startDate: string;
         endDate: string;
+        cancelledAt: string | null;
     } | null;
     lastCheckinAt: string | null;
     checkinCount30Days: number;
