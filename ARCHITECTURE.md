@@ -174,10 +174,4 @@ graph TB
 
 ---
 
-## Additional Documentation
-
-For detailed technical specifications including database schema, business rules, validation rules, concurrency control, and future improvements, see [TECH_SPEC.md](file:///Users/amanganello/Documents/Membership%20Managment%20app/TECH_SPEC.md).
-
----
-
-*Document Version: 1.1 | Updated: 2026-02-01 | Status: Active Development (Flexible Plans, Delayed Cancellation)*
+*Document Version: 1.1 | Created: 2026-01-28*
