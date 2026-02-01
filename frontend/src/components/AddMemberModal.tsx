@@ -65,6 +65,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                                     name="nameInput"
                                     type="text"
                                     required
+                                    maxLength={255}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="John Doe"
                                 />
@@ -79,6 +80,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                                     name="emailInput"
                                     type="email"
                                     required
+                                    maxLength={255}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="john@example.com"
                                 />
@@ -86,9 +88,9 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
 
                             {createMember.isError && (
                                 <div role="alert" className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                                    {createMember.error instanceof Error
-                                        ? createMember.error.message
-                                        : 'Failed to create member'}
+                                    {createMember.error instanceof Error && createMember.error.message.includes('Email already exists')
+                                        ? 'Account registration could not be completed. Please contact support or try another email.'
+                                        : (createMember.error instanceof Error ? createMember.error.message : 'Failed to create member')}
                                 </div>
                             )}
                         </div>
