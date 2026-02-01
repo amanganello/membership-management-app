@@ -59,5 +59,9 @@ docker compose down -v
 docker compose up db -d
 ```
 
+### 3. Access the App
+- **Frontend:** [http://localhost:8080](http://localhost:8080)
+- **Backend:** [http://localhost:3000](http://localhost:3000)
+
 **Port Conflicts?**
-Ensure ports `3000`, `5173`, and `5432` are free on your machine.
+Ensure ports `8080`, `3000`, and `5432` are free on your machine.
