@@ -35,7 +35,7 @@ function addDuration(startDate: string, value: number, unit: 'day' | 'month' | '
     // So yes, subtract 1 day from the result.
     date.setDate(date.getDate() - 1);
 
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split('T')[0] as string;
 }
 
 export const membershipService = {

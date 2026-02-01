@@ -23,6 +23,8 @@ erDiagram
         uuid id PK
         varchar name
         decimal monthly_cost
+        int duration_value
+        varchar duration_unit
         timestamp created_at
         timestamp updated_at
     }
@@ -33,6 +35,7 @@ erDiagram
         uuid plan_id FK
         date start_date
         date end_date
+        timestamp cancelled_at
         timestamp created_at
         timestamp updated_at
     }
@@ -67,6 +70,8 @@ erDiagram
 | id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() |
 | name | VARCHAR(100) | NOT NULL |
 | monthly_cost | DECIMAL(10,2) | NOT NULL, CHECK (monthly_cost >= 0) |
+| duration_value | INTEGER | NOT NULL, DEFAULT 1 |
+| duration_unit | VARCHAR(20) | NOT NULL, CHECK (duration_unit IN ('day', 'month', 'year')) |
 | created_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 | updated_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 
@@ -80,6 +85,7 @@ erDiagram
 | plan_id | UUID | NOT NULL, REFERENCES plans(id) ON DELETE RESTRICT |
 | start_date | DATE | NOT NULL |
 | end_date | DATE | NOT NULL |
+| cancelled_at | TIMESTAMP WITH TIME ZONE | DEFAULT NULL |
 | created_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 | updated_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 
@@ -149,220 +155,40 @@ WHERE m.end_date >= CURRENT_DATE;
 
 ---
 
-## API Endpoints
+## API Interface
 
-Base URL: `http://localhost:3000/api`
+| Method | Endpoint | Action | Payload / Params |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/health` | Server Check | - |
+| `GET` | `/members` | List Members | `?q=search`, `?page=1` |
+| `POST` | `/members` | Create Member | `{ name, email }` |
+| `GET` | `/members/:id` | Get Summary | - |
+| `GET` | `/plans` | List Plans | - |
+| `POST` | `/memberships` | Assign Plan | `{ memberId, planId, startDate }` |
+| `PATCH` | `/memberships/:id/cancel` | Cancel | - |
+| `POST` | `/checkins` | Record Visit | `{ memberId }` |
 
-### Health Check
+**Standard Response:** JSON. Errors return `{ error: { code, message } }`.
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Server health status |
+### Representative Examples
 
-**Response:** `200 OK`
+**Request (`POST /members`):**
 ```json
-{ "status": "ok", "timestamp": "2026-01-28T12:00:00.000Z" }
+{ "name": "Alice", "email": "alice@example.com" }
+```
+**Response (`201 Created`):**
+```json
+{ "id": "uuid...", "name": "Alice", "createdAt": "2026-01-01..." }
 ```
 
----
-
-### Members
-
-#### Create Member
-`POST /api/members`
-
-**Request Body:**
+**Request (`POST /checkins`):**
 ```json
-{
-  "name": "John Doe",
-  "email": "john@example.com"
-}
+{ "memberId": "uuid..." }
 ```
-
-**Response:** `201 Created`
+**Response (`400 Bad Request`):**
 ```json
-{
-  "id": "uuid",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "joinDate": "2026-01-28",
-  "createdAt": "2026-01-28T12:00:00.000Z",
-  "updatedAt": "2026-01-28T12:00:00.000Z"
-}
+{ "error": { "code": "VALIDATION_ERROR", "message": "No active membership" } }
 ```
-
-**Errors:**
-- `400` - Validation error (invalid email, empty name)
-- `409` - Email already exists
-
----
-
-#### List Members
-`GET /api/members`
-
-**Query Parameters:**
-- `q` (optional): Search by name or email
-
-**Response:** `200 OK`
-```json
-[
-  { "id": "uuid", "name": "John Doe", "email": "john@example.com", ... }
-]
-```
-
----
-
-#### Get Member Summary
-`GET /api/members/:id`
-
-**Response:** `200 OK`
-```json
-{
-  "id": "uuid",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "joinDate": "2026-01-01",
-  "activeMembership": {
-    "id": "uuid",
-    "planName": "Premium Monthly",
-    "startDate": "2026-01-01",
-    "endDate": "2026-12-31"
-  },
-  "lastCheckinAt": "2026-01-28T10:00:00.000Z",
-  "checkinCount30Days": 12
-}
-```
-
-**Errors:**
-- `400` - Invalid UUID format
-- `404` - Member not found
-
----
-
-### Plans
-
-#### List Plans
-`GET /api/plans`
-
-**Response:** `200 OK`
-```json
-[
-  { "id": "uuid", "name": "Basic Monthly", "monthlyCost": 29.99, ... },
-  { "id": "uuid", "name": "Premium Monthly", "monthlyCost": 59.99, ... }
-]
-```
-
----
-
-### Memberships
-
-#### Assign Membership
-`POST /api/memberships`
-
-**Request Body:**
-```json
-{
-  "memberId": "uuid",
-  "planId": "uuid",
-  "startDate": "2026-01-01",
-  "endDate": "2026-12-31"
-}
-```
-
-**Response:** `201 Created`
-```json
-{
-  "id": "uuid",
-  "memberId": "uuid",
-  "planId": "uuid",
-  "startDate": "2026-01-01",
-  "endDate": "2026-12-31",
-  "createdAt": "...",
-  "updatedAt": "..."
-}
-```
-
-**Errors:**
-- `400` - Validation error (invalid dates, start > end)
-- `404` - Member or Plan not found
-- `409` - Overlapping membership exists
-
----
-
-#### Cancel Membership
-`PATCH /api/memberships/:id/cancel`
-
-**Request Body:**
-```json
-{
-  "cancelDate": "2026-06-15"
-}
-```
-
-**Response:** `200 OK`
-```json
-{
-  "id": "uuid",
-  "memberId": "uuid",
-  "planId": "uuid",
-  "startDate": "2026-01-01",
-  "endDate": "2026-06-15",
-  ...
-}
-```
-
-**Errors:**
-- `400` - Cancel date in the past, membership already expired
-- `404` - Membership not found
-
----
-
-### Check-ins
-
-#### Record Check-in
-`POST /api/checkins`
-
-**Request Body:**
-```json
-{
-  "memberId": "uuid"
-}
-```
-
-**Response:** `201 Created`
-```json
-{
-  "id": "uuid",
-  "memberId": "uuid",
-  "checkedInAt": "2026-01-28T10:00:00.000Z"
-}
-```
-
-**Errors:**
-- `400` - Member has no active membership (check-in denied)
-- `404` - Member not found
-
----
-
-### Error Response Format
-
-All errors return a consistent format:
-```json
-{
-  "error": {
-    "message": "Error description",
-    "code": "ERROR_CODE",
-    "statusCode": 400
-  }
-}
-```
-
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `VALIDATION_ERROR` | 400 | Invalid input data |
-| `NOT_FOUND` | 404 | Resource doesn't exist |
-| `CONFLICT` | 409 | Duplicate or overlapping resource |
-| `INTERNAL_ERROR` | 500 | Server error |
 
 ---
 
@@ -407,16 +233,20 @@ AND end_date >= CURRENT_DATE;
 ---
 
 ### 4. Membership Cancellation
-**Approach:** When a membership is cancelled, the system updates `end_date` to the cancellation date.
+**Approach:** "Cancel at Period End" (Delayed Cancellation).
+When a membership is cancelled, the system records the timestamp in `cancelled_at` but **does NOT** change the `end_date`.
 
 **Example:**
 ```
 Original: start_date = 2026-01-01, end_date = 2026-12-31
 Cancelled on 2026-06-15:
-Updated: start_date = 2026-01-01, end_date = 2026-06-15
+Updated: cancelled_at = 2026-06-15, end_date = 2026-12-31 (Unchanged)
 ```
 
-**Effect:** Membership becomes inactive the next day (2026-06-16), preventing further check-ins.
+**Effect:**
+- The member remains **Active** and can check in until `end_date`.
+- The UI displays "Scheduled to Cancel" and prevents manual renewal until expired.
+- Prevents "early termination" refunds or loss of paid access.
 
 ---
 
@@ -502,78 +332,59 @@ try {
 
 ## "If More Time" Improvements
 
-### 1. 🔐 Staff Authentication
-**Priority:** Critical (currently skipped for MVP)
-
-**Why:** Currently no access control; any user can perform any action.
+### 1. 📄 Scalable Pagination (Keyset/Cursor-based)
+**Why:** Critical performance stability as datasets grow to millions of records. Standard "Offset" pagination degrades linearly (`O(N)`).
 
 **Implementation:**
-- Login page with email/password
-- JWT tokens in httpOnly cookies
-- Protect all `/api/*` routes with auth middleware
-- Add staff roles (Admin, Front Desk)
+- **Method:** Keyset Pagination (Seek Method).
+- **Benefit:** Constant time `O(1)` database performance regardless of page depth.
 
 ---
 
-### 2. 📊 Check-in Analytics Dashboard
-**Why:** Business value for gym owners to understand usage patterns
-
-**Features:**
-- Daily/weekly/monthly check-in trends (line chart)
-- Peak hours visualization (bar chart)
-- Member visit frequency report
-- Exportable CSV reports for external analysis
-
-**Example Query:**
-```sql
-SELECT DATE(checked_in_at) as date, COUNT(*) as count
-FROM checkins 
-WHERE checked_in_at >= NOW() - INTERVAL '30 days'
-GROUP BY DATE(checked_in_at)
-ORDER BY date;
-```
-
----
-
-### 3. 🔔 Member Engagement Notifications
-**Why:** Increase retention and re-engage inactive members
-
-**Features:**
-- Email/SMS when member hasn't visited in 7+ days
-- Welcome notification on first check-in
-- Birthday/anniversary messages
-- Membership expiration reminders (7, 3, 1 day before)
-
-**Integration:** SendGrid (email) + Twilio (SMS) or AWS SES/SNS
-
----
-
-### 4. 📱 QR Code Self Check-in
-**Why:** Reduce staff workload, enable self-service kiosks
-
+### 2. 🧪 Comprehensive Testing Strategy
+**Why:** Ensure system stability and prevent regressions.
 **Implementation:**
-- Generate unique QR code per member (encodes member UUID)
-- Members scan QR at entrance tablet/kiosk
-- API endpoint: `POST /api/checkins/qr`
-- Libraries: `qrcode` (generation) + device camera API (scanning)
-
-**Flow:**
-1. Member displays QR code (printed card or mobile app)
-2. Kiosk scans code
-3. System validates → checks active membership → logs check-in
-4. Display success/error on screen
+- Unit tests for all Services and Repositories (Jest).
+- Integration tests for API endpoints (Supertest).
+- E2E tests for critical user flows (Playwright/Cypress).
 
 ---
 
-### 5. 💳 Payment Integration
-**Why:** Automate billing and renewals
-
-**Features:**
-- Stripe/PayPal integration for recurring payments
-- Auto-renewal of memberships before expiration
-- Payment history tracking
-- Automated receipt generation
+### 3. 🚀 CI/CD Pipeline
+**Why:** Automate quality checks and deployment.
+**Implementation:**
+- GitHub Actions workflow for Lint + Test + Build.
+- Pre-commit hooks (Husky) for code quality.
+- Automated database migration application.
 
 ---
+
+### 4. 📝 API Documentation (OpenAPI)
+**Why:** Standardize API consumption and enable client generation.
+**Implementation:**
+- Auto-generate Swagger/OpenAPI spec from validation schemas.
+- Interactive API playground (Swagger UI).
+- Automated TypeScript client generation for frontend.
+
+---
+
+### 5. 🔍 Monitoring & Observability
+**Why:** Proactive error detection and performance tuning.
+**Implementation:**
+- Structured logging (Pino) with request correlation IDs.
+- Centralized error tracking (e.g., Sentry).
+- Health checks with deep database connectivity validation.
+
+---
+
+### 6. 🔮 Future Product Features
+**Why:** Business value expansion.
+**Planned Features:**
+- **Authentication:** Staff login, JWT tokens, RBAC.
+- **Analytics:** Dashboard for check-in trends and peak hours.
+- **Engagement:** Automated emails for missed visits or renewals.
+- **QR Check-in:** Self-service kiosk mode.
+- **Payments:** Stripe integration for recurring billing.
+
 
 *Document Version: 1.0 | Created: 2026-01-28*
