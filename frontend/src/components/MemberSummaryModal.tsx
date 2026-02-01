@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
-import { formatDate, formatDateTime } from '@/lib/utils';
+import { formatDate, formatDateTime, calculateMinStartDate } from '@/lib/utils';
 import { MEMBERSHIP_STATUS_TEXT, UI_TEXT } from '@/lib/constants';
 
 interface MemberSummaryModalProps {
@@ -53,6 +53,19 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
             // Error handled by React Query
         }
     };
+
+    const handleToggleAssignForm = () => {
+        const nextState = !showAssignForm;
+        setShowAssignForm(nextState);
+
+        if (nextState) {
+            // Auto-fill with the valid minimum date (Today or Next Day after active plan)
+            const minDate = calculateMinStartDate(member?.activeMembership?.endDate);
+            setStartDate(minDate);
+        }
+    };
+
+    const minStartDate = calculateMinStartDate(member?.activeMembership?.endDate);
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -117,15 +130,23 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                             </p>
                                         )}
 
-                                        {!member.activeMembership.cancelledAt && new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
+                                        <div className="flex gap-4 pt-2">
+                                            {!member.activeMembership.cancelledAt && new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
+                                                <button
+                                                    onClick={handleCancel}
+                                                    disabled={cancelMembership.isPending}
+                                                    className="text-sm text-red-600 hover:text-red-700"
+                                                >
+                                                    {cancelMembership.isPending ? UI_TEXT.CANCELING_BUTTON : UI_TEXT.CANCEL_MEMBERSHIP_BUTTON}
+                                                </button>
+                                            )}
                                             <button
-                                                onClick={handleCancel}
-                                                disabled={cancelMembership.isPending}
-                                                className="text-sm text-red-600 hover:text-red-700"
+                                                onClick={handleToggleAssignForm}
+                                                className="text-sm text-blue-600 hover:text-blue-700"
                                             >
-                                                {cancelMembership.isPending ? UI_TEXT.CANCELING_BUTTON : UI_TEXT.CANCEL_MEMBERSHIP_BUTTON}
+                                                {UI_TEXT.SCHEDULE_RENEWAL_ACTION}
                                             </button>
-                                        )}
+                                        </div>
                                     </div>
                                 ) : (
                                     <div>
@@ -133,7 +154,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                             {UI_TEXT.NO_ACTIVE_MEMBERSHIP}
                                         </span>
                                         <button
-                                            onClick={() => setShowAssignForm(!showAssignForm)}
+                                            onClick={handleToggleAssignForm}
                                             className="block mt-2 text-sm text-blue-600 hover:text-blue-700"
                                         >
                                             {UI_TEXT.ASSIGN_MEMBERSHIP_ACTION}
@@ -143,7 +164,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                             </div>
 
                             {/* Assign Form */}
-                            {showAssignForm && !member.activeMembership && (
+                            {showAssignForm && (
                                 <form onSubmit={handleAssign} className="bg-blue-50 rounded-lg p-4 space-y-3">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
@@ -151,7 +172,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                             value={selectedPlanId}
                                             onChange={(e) => {
                                                 setSelectedPlanId(e.target.value);
-                                                // Reset calculated date when plan changes
                                             }}
                                             className="w-full px-3 py-2 border rounded-lg"
                                             required
@@ -171,6 +191,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         <input
                                             type="date"
                                             value={startDate}
+                                            min={minStartDate}
                                             onChange={(e) => setStartDate(e.target.value)}
                                             className="w-full px-3 py-2 border rounded-lg"
                                             required

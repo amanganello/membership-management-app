@@ -21,7 +21,22 @@ export function formatDateTime(date: string | Date | number): string {
         day: '2-digit',
         year: 'numeric',
         hour: 'numeric',
-        minute: 'numeric',
         second: 'numeric',
     });
+}
+
+export function calculateNextDay(dateString: string): string {
+    const date = new Date(dateString);
+    const nextDay = new Date(date);
+    nextDay.setDate(date.getDate() + 1);
+    return nextDay.toISOString().split('T')[0];
+}
+
+export function calculateMinStartDate(currentEndDate?: string): string {
+    const today = new Date().toISOString().split('T')[0];
+    if (currentEndDate) {
+        const nextStart = calculateNextDay(currentEndDate);
+        return nextStart > today ? nextStart : today;
+    }
+    return today;
 }
