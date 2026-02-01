@@ -12,6 +12,8 @@ CREATE TABLE plans (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     monthly_cost DECIMAL(10, 2) NOT NULL CHECK (monthly_cost >= 0),
+    duration_value INTEGER NOT NULL DEFAULT 1,
+    duration_unit VARCHAR(10) NOT NULL CHECK (duration_unit IN ('day', 'month', 'year')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -42,8 +44,10 @@ CREATE TABLE memberships (
     member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
     plan_id UUID NOT NULL REFERENCES plans(id) ON DELETE RESTRICT,
     start_date DATE NOT NULL,
-    end_date DATE NOT NULL,  -- Required per business rules
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    end_date DATE NOT NULL,    -- "Active" means current_date BETWEEN start_date AND end_date
+    -- "Cancelled" means cancelled_at IS NOT NULL
+    cancelled_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
     -- Validate start_date <= end_date (allows single-day passes)

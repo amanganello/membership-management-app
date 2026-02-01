@@ -7,10 +7,10 @@
 -- ============================================
 -- PLANS
 -- ============================================
-INSERT INTO plans (name, monthly_cost) VALUES
-  ('Basic Monthly', 29.99),
-  ('Premium Monthly', 59.99),
-  ('Annual VIP', 499.99);
+INSERT INTO plans (name, monthly_cost, duration_value, duration_unit) VALUES
+  ('Day Pass', 10.00, 1, 'day'),
+  ('Monthly Pass', 49.99, 1, 'month'),
+  ('Annual Pass', 499.99, 1, 'year');
 
 SELECT 'Seeded ' || COUNT(*) || ' plans' AS status FROM plans;
 
@@ -30,37 +30,37 @@ SELECT 'Seeded ' || COUNT(*) || ' members' AS status FROM members;
 -- ============================================
 -- MEMBERSHIPS (Sample Active & Expired)
 -- ============================================
--- John Doe: Active Premium membership (current year)
+-- John Doe: Active Day Pass (For testing "Ends Today" logic)
 INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
   ((SELECT id FROM members WHERE email = 'john.doe@example.com'),
-   (SELECT id FROM plans WHERE name = 'Premium Monthly'),
-   '2026-01-01', '2026-12-31');
+   (SELECT id FROM plans WHERE name = 'Day Pass'),
+   CURRENT_DATE, CURRENT_DATE);
 
--- Jane Smith: Active Basic membership (6 months)
+-- Jane Smith: Active Monthly Pass
 INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
   ((SELECT id FROM members WHERE email = 'jane.smith@example.com'),
-   (SELECT id FROM plans WHERE name = 'Basic Monthly'),
-   '2026-01-15', '2026-07-15');
+   (SELECT id FROM plans WHERE name = 'Monthly Pass'),
+   CURRENT_DATE - INTERVAL '10 days', CURRENT_DATE + INTERVAL '20 days');
 
--- Mike Johnson: Active Annual VIP membership
+-- Mike Johnson: Active Annual Pass
 INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
   ((SELECT id FROM members WHERE email = 'mike.j@example.com'),
-   (SELECT id FROM plans WHERE name = 'Annual VIP'),
-   '2025-12-01', '2026-11-30');
+   (SELECT id FROM plans WHERE name = 'Annual Pass'),
+   '2026-01-01', '2026-12-31');
 
--- Tom Brown: EXPIRED membership (for testing check-in denial)
+-- Tom Brown: EXPIRED Monthly Pass
 INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
   ((SELECT id FROM members WHERE email = 'tom.brown@example.com'),
-   (SELECT id FROM plans WHERE name = 'Basic Monthly'),
-   '2025-11-10', '2026-01-10');
+   (SELECT id FROM plans WHERE name = 'Monthly Pass'),
+   CURRENT_DATE - INTERVAL '60 days', CURRENT_DATE - INTERVAL '30 days');
 
--- Sarah Williams: NO MEMBERSHIP (for testing check-in denial)
+-- Sarah Williams: NO MEMBERSHIP
 
--- Alex Turner: EDGE CASE - Membership expires exactly TODAY (should still be ACTIVE)
+-- Alex Turner: EDGE CASE - Monthly Pass expires exactly TODAY
 INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
   ((SELECT id FROM members WHERE email = 'alex.turner@example.com'),
-   (SELECT id FROM plans WHERE name = 'Basic Monthly'),
-   CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE);  -- Expires today!
+   (SELECT id FROM plans WHERE name = 'Monthly Pass'),
+   CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE);
 
 SELECT 'Seeded ' || COUNT(*) || ' memberships' AS status FROM memberships;
 

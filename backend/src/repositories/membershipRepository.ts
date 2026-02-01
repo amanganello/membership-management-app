@@ -6,15 +6,17 @@ interface ActiveMembershipInfo {
     planName: string;
     startDate: string;
     endDate: string;
+    cancelledAt: string | null;
 }
 
 export const membershipRepository = {
-    async create(data: AssignMembershipDto): Promise<Membership> {
+    async create(data: AssignMembershipDto & { endDate: string }): Promise<Membership> {
         const result = await pool.query(
             `INSERT INTO memberships (member_id, plan_id, start_date, end_date) 
        VALUES ($1, $2, $3, $4) 
        RETURNING id, member_id as "memberId", plan_id as "planId", 
                  start_date as "startDate", end_date as "endDate",
+                 cancelled_at as "cancelledAt",
                  created_at as "createdAt", updated_at as "updatedAt"`,
             [data.memberId, data.planId, data.startDate, data.endDate]
         );
@@ -25,6 +27,7 @@ export const membershipRepository = {
         const result = await pool.query(
             `SELECT id, member_id as "memberId", plan_id as "planId", 
               start_date as "startDate", end_date as "endDate",
+              cancelled_at as "cancelledAt",
               created_at as "createdAt", updated_at as "updatedAt"
        FROM memberships 
        WHERE id = $1`,
@@ -36,7 +39,8 @@ export const membershipRepository = {
     async findActiveByMemberId(memberId: string): Promise<ActiveMembershipInfo | null> {
         const result = await pool.query(
             `SELECT m.id, p.name as "planName", 
-              m.start_date as "startDate", m.end_date as "endDate"
+              m.start_date as "startDate", m.end_date as "endDate",
+              m.cancelled_at as "cancelledAt"
        FROM memberships m
        JOIN plans p ON m.plan_id = p.id
        WHERE m.member_id = $1 AND m.end_date >= CURRENT_DATE
@@ -59,12 +63,13 @@ export const membershipRepository = {
     async cancel(id: string, cancelDate: string): Promise<Membership | null> {
         const result = await pool.query(
             `UPDATE memberships 
-       SET end_date = $2
-       WHERE id = $1 AND end_date >= CURRENT_DATE
+       SET cancelled_at = NOW()
+       WHERE id = $1 AND end_date >= CURRENT_DATE AND cancelled_at IS NULL
        RETURNING id, member_id as "memberId", plan_id as "planId", 
                  start_date as "startDate", end_date as "endDate",
+                 cancelled_at as "cancelledAt",
                  created_at as "createdAt", updated_at as "updatedAt"`,
-            [id, cancelDate]
+            [id]
         );
         return (result.rows[0] as Membership) ?? null;
     }

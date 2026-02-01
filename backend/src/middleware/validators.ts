@@ -11,7 +11,7 @@ export const assignMembershipSchema = z.object({
     memberId: z.string().uuid('Invalid member ID'),
     planId: z.string().uuid('Invalid plan ID'),
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Start date must be YYYY-MM-DD format'),
-    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'End date must be YYYY-MM-DD format')
+    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'End date must be YYYY-MM-DD format').optional()
 });
 
 export const cancelMembershipSchema = z.object({
