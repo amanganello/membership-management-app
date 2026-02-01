@@ -43,7 +43,9 @@ export const membershipRepository = {
               m.cancelled_at as "cancelledAt"
        FROM memberships m
        JOIN plans p ON m.plan_id = p.id
-       WHERE m.member_id = $1 AND m.end_date >= CURRENT_DATE
+       WHERE m.member_id = $1 
+         AND m.start_date <= CURRENT_DATE 
+         AND m.end_date >= CURRENT_DATE
        ORDER BY m.end_date DESC
        LIMIT 1`,
             [memberId]
@@ -54,7 +56,9 @@ export const membershipRepository = {
     async hasActiveMembership(memberId: string): Promise<boolean> {
         const result = await pool.query(
             `SELECT 1 FROM memberships 
-       WHERE member_id = $1 AND end_date >= CURRENT_DATE`,
+       WHERE member_id = $1 
+         AND start_date <= CURRENT_DATE 
+         AND end_date >= CURRENT_DATE`,
             [memberId]
         );
         return result.rowCount !== null && result.rowCount > 0;

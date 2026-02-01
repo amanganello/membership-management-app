@@ -197,7 +197,7 @@ WHERE m.end_date >= CURRENT_DATE;
 ### 1. Active Membership Definition
 A membership is considered **active** if and only if:
 ```
-end_date >= CURRENT_DATE
+start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE
 ```
 
 This allows memberships expiring today to remain valid for check-in.
@@ -223,6 +223,7 @@ This allows memberships expiring today to remain valid for check-in.
 -- Service layer checks:
 SELECT COUNT(*) FROM memberships
 WHERE member_id = $1
+AND start_date <= CURRENT_DATE
 AND end_date >= CURRENT_DATE;
 
 -- If count = 0, reject check-in
