@@ -88,7 +88,7 @@ sequenceDiagram
 graph TB
     subgraph "Docker Compose"
         subgraph "frontend"
-            VITE["Vite Dev Server<br/>:5174"]
+            VITE["Vite Dev Server<br/>:8080"]
         end
         
         subgraph "api"
@@ -101,7 +101,7 @@ graph TB
         end
     end
     
-    BROWSER["localhost:5174"] --> VITE
+    BROWSER["localhost:8080"] --> VITE
     VITE -->|"/api/* proxy"| EXPRESS
     EXPRESS -->|"pg connection"| PG
     PG --> VOL
@@ -115,7 +115,7 @@ graph TB
 ```yaml
 services:
   frontend:    # Vite + React
-    ports: ["5174:5174"]
+    ports: ["8080:8080"]
     depends_on: [api]
     
   api:         # Express + TypeScript
