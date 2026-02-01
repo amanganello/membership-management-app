@@ -46,7 +46,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
 
                 {/* Modal */}
                 <div
-                    className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6"
+                    className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-4 lg:p-6"
                     role="dialog"
                     aria-labelledby="modal-title"
                 >
