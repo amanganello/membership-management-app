@@ -3,11 +3,16 @@ FROM node:20.20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy shared module
+COPY shared ./shared
+
+# Setup Backend
+WORKDIR /app/backend
+COPY backend/package*.json ./
 RUN npm ci
 
-COPY tsconfig.json ./
-COPY src ./src
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
 
 RUN npm run build
 
@@ -19,10 +24,14 @@ ENV NODE_ENV=$NODE_ENV
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy shared module (needed for dependencies resolution)
+COPY shared ./shared
+
+WORKDIR /app/backend
+COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/backend/dist ./dist
 
 EXPOSE 3000
 
