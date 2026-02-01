@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MemberSelector } from '@/components/MemberSelector';
 import { useCreateCheckin } from '@/hooks/useCheckins';
 import type { Member } from '@memberapp/shared';
@@ -8,6 +8,14 @@ export function CheckinPage() {
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const createCheckin = useCreateCheckin();
+
+    // Auto-dismiss success messages
+    useEffect(() => {
+        if (message?.type === 'success') {
+            const timer = setTimeout(() => setMessage(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
 
     const handleSelectMember = (member: Member) => {
         setSelectedMember(member);
@@ -51,8 +59,8 @@ export function CheckinPage() {
                     {selectedMember && (
                         <form onSubmit={handleCheckin}>
                             <div className="p-4 bg-blue-50 rounded-lg">
-                                <div className="flex items-start justify-between">
-                                    <div>
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="space-y-1">
                                         <p className="font-medium text-gray-900">{selectedMember.name}</p>
                                         <p className="text-sm text-gray-600">{selectedMember.email}</p>
                                     </div>
@@ -68,7 +76,7 @@ export function CheckinPage() {
                                 <button
                                     type="submit"
                                     disabled={createCheckin.isPending}
-                                    className="mt-4 w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50"
+                                    className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50"
                                 >
                                     {createCheckin.isPending ? 'Checking in...' : '✅ Check In'}
                                 </button>
