@@ -180,4 +180,4 @@ For detailed technical specifications including database schema, business rules,
 
 ---
 
-*Document Version: 1.0 | Updated: 2026-01-28 | Status: MVP Scope*
+*Document Version: 1.1 | Updated: 2026-02-01 | Status: Active Development (Flexible Plans, Delayed Cancellation)*

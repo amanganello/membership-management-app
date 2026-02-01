@@ -23,6 +23,8 @@ erDiagram
         uuid id PK
         varchar name
         decimal monthly_cost
+        int duration_value
+        varchar duration_unit
         timestamp created_at
         timestamp updated_at
     }
@@ -33,6 +35,7 @@ erDiagram
         uuid plan_id FK
         date start_date
         date end_date
+        timestamp cancelled_at
         timestamp created_at
         timestamp updated_at
     }
@@ -67,6 +70,8 @@ erDiagram
 | id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() |
 | name | VARCHAR(100) | NOT NULL |
 | monthly_cost | DECIMAL(10,2) | NOT NULL, CHECK (monthly_cost >= 0) |
+| duration_value | INTEGER | NOT NULL, DEFAULT 1 |
+| duration_unit | VARCHAR(20) | NOT NULL, CHECK (duration_unit IN ('day', 'month', 'year')) |
 | created_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 | updated_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 
@@ -80,6 +85,7 @@ erDiagram
 | plan_id | UUID | NOT NULL, REFERENCES plans(id) ON DELETE RESTRICT |
 | start_date | DATE | NOT NULL |
 | end_date | DATE | NOT NULL |
+| cancelled_at | TIMESTAMP WITH TIME ZONE | DEFAULT NULL |
 | created_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 | updated_at | TIMESTAMP WITH TIME ZONE | DEFAULT NOW() |
 
@@ -407,16 +413,20 @@ AND end_date >= CURRENT_DATE;
 ---
 
 ### 4. Membership Cancellation
-**Approach:** When a membership is cancelled, the system updates `end_date` to the cancellation date.
+**Approach:** "Cancel at Period End" (Delayed Cancellation).
+When a membership is cancelled, the system records the timestamp in `cancelled_at` but **does NOT** change the `end_date`.
 
 **Example:**
 ```
 Original: start_date = 2026-01-01, end_date = 2026-12-31
 Cancelled on 2026-06-15:
-Updated: start_date = 2026-01-01, end_date = 2026-06-15
+Updated: cancelled_at = 2026-06-15, end_date = 2026-12-31 (Unchanged)
 ```
 
-**Effect:** Membership becomes inactive the next day (2026-06-16), preventing further check-ins.
+**Effect:**
+- The member remains **Active** and can check in until `end_date`.
+- The UI displays "Scheduled to Cancel" and prevents manual renewal until expired.
+- Prevents "early termination" refunds or loss of paid access.
 
 ---
 
