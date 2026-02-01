@@ -18,26 +18,23 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
 
     const [selectedPlanId, setSelectedPlanId] = useState('');
     const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
     const [showAssignForm, setShowAssignForm] = useState(false);
 
     if (!memberId) return null;
 
     const handleAssign = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedPlanId || !startDate || !endDate) return;
+        if (!selectedPlanId || !startDate) return;
 
         try {
             await assignMembership.mutateAsync({
                 memberId,
                 planId: selectedPlanId,
                 startDate,
-                endDate,
             });
             setShowAssignForm(false);
             setSelectedPlanId('');
             setStartDate('');
-            setEndDate('');
         } catch {
             // Error handled by React Query
         }
