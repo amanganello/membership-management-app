@@ -45,9 +45,9 @@ describe('MemberTable', () => {
             <MemberTable members={mockMembers} isLoading={false} onRowClick={() => { }} />
         );
 
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
-        expect(screen.getByText('jane@example.com')).toBeInTheDocument();
-        expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+        expect(screen.getAllByText('John Doe')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('jane@example.com')[0]).toBeInTheDocument();
+        expect(screen.getAllByText('Jane Smith')[0]).toBeInTheDocument();
     });
 
     it('should call onRowClick when row is clicked', async () => {
@@ -58,7 +58,7 @@ describe('MemberTable', () => {
             <MemberTable members={mockMembers} isLoading={false} onRowClick={onRowClick} />
         );
 
-        await user.click(screen.getByText('John Doe'));
+        await user.click(screen.getAllByText('John Doe')[0]!);
 
         expect(onRowClick).toHaveBeenCalledTimes(1);
         expect(onRowClick).toHaveBeenCalledWith(mockMembers[0]);
