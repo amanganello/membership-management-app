@@ -8,7 +8,7 @@ export const UI_TEXT = {
     ACCESS_UNTIL_PREFIX: 'Access until',
     CANCEL_MEMBERSHIP_BUTTON: 'Cancel Membership',
     CANCELING_BUTTON: 'Canceling...',
-    SCHEDULE_RENEWAL_ACTION: 'Schedule Renewal',
+    SCHEDULE_RENEWAL_ACTION: '+ Assign Membership',
     JOINED_PREFIX: 'Joined:',
     MEMBERSHIP_STATUS_HEADER: 'Membership Status',
     CHECKIN_ACTIVITY_HEADER: 'Check-in Activity',

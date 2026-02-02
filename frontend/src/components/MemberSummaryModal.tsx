@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
-import { formatDate, formatDateTime, calculateMinStartDate, getMembershipStatus } from '@/lib/utils';
-import { MEMBERSHIP_STATUS_TEXT, UI_TEXT } from '@/lib/constants';
+import { formatDate, formatDateTime, calculateMinStartDate } from '@/lib/utils';
+import { UI_TEXT } from '@/lib/constants';
+import { MembershipItem } from './MembershipItem';
 
 interface MemberSummaryModalProps {
     memberId: string | null;
@@ -19,6 +20,14 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
     const [selectedPlanId, setSelectedPlanId] = useState('');
     const [startDate, setStartDate] = useState('');
     const [showAssignForm, setShowAssignForm] = useState(false);
+
+    useEffect(() => {
+        if (!memberId) {
+            // setSelectedPlanId('');
+            // setStartDate('');
+            setShowAssignForm(false);
+        }
+    }, [memberId]);
 
     if (!memberId) return null;
 
@@ -109,83 +118,26 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                             <div className="bg-gray-50 rounded-lg p-4">
                                 <div className="flex justify-between items-center mb-3">
                                     <h3 className="font-medium text-gray-900">{UI_TEXT.MEMBERSHIP_STATUS_HEADER}</h3>
-                                    <button
-                                        onClick={handleToggleAssignForm}
-                                        className="text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
-                                    >
-                                        {showAssignForm ? 'Cancel New' : UI_TEXT.ASSIGN_MEMBERSHIP_ACTION}
-                                    </button>
+                                    {!showAssignForm && (
+                                        <button
+                                            onClick={handleToggleAssignForm}
+                                            className="text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                                        >
+                                            {UI_TEXT.ASSIGN_MEMBERSHIP_ACTION}
+                                        </button>
+                                    )}
                                 </div>
 
                                 {member.memberships && member.memberships.length > 0 ? (
                                     <div className="space-y-3">
-                                        {member.memberships.map((membership) => {
-                                            const status = getMembershipStatus(membership);
-                                            const { isCancelled, isEndsToday, isActive, isFuture } = status;
-
-                                            const shouldShowCancel = (isActive || isEndsToday || isFuture) && !isCancelled;
-
-                                            console.log(`[Membership] ID: ${membership.id} | Plan: ${membership.planName}`, {
-                                                isCancelled,
-                                                isEndsToday,
-                                                isActive,
-                                                isFuture,
-                                                shouldShowCancel,
-                                                dates: {
-                                                    start: membership.startDate,
-                                                    end: membership.endDate,
-                                                    cancelledAt: membership.cancelledAt
-                                                }
-                                            });
-
-                                            return (
-                                                <div key={membership.id} className="bg-white border rounded-md p-3 shadow-sm">
-                                                    <div className="flex justify-between items-start mb-1">
-                                                        <div className="flex items-center gap-2">
-                                                            {isCancelled ? (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                                    {MEMBERSHIP_STATUS_TEXT.SCHEDULED_TO_CANCEL}
-                                                                </span>
-                                                            ) : isEndsToday ? (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                                                                    {MEMBERSHIP_STATUS_TEXT.ENDS_TODAY}
-                                                                </span>
-                                                            ) : isActive ? (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                                                    {MEMBERSHIP_STATUS_TEXT.ACTIVE}
-                                                                </span>
-                                                            ) : isFuture ? (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                                    Future
-                                                                </span>
-                                                            ) : (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                                                    Expired
-                                                                </span>
-                                                            )}
-                                                            <span className="font-medium text-gray-900">{membership.planName}</span>
-                                                        </div>
-                                                        {shouldShowCancel && (
-                                                            <button
-                                                                onClick={() => handleCancelMembership(membership.id)}
-                                                                disabled={cancelMembership.isPending}
-                                                                className="text-xs text-red-600 hover:text-red-700 underline cursor-pointer"
-                                                            >
-                                                                {cancelMembership.isPending ? 'Canceling...' : 'Cancel'}
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-sm text-gray-500">
-                                                        {formatDate(membership.startDate)} → {formatDate(membership.endDate)}
-                                                    </p>
-                                                    {isCancelled && (
-                                                        <p className="text-xs text-yellow-700 mt-1">
-                                                            Cancelled on {formatDate(membership.cancelledAt!)}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
+                                        {member.memberships.map((membership) => (
+                                            <MembershipItem
+                                                key={membership.id}
+                                                membership={membership}
+                                                onCancel={handleCancelMembership}
+                                                isCanceling={cancelMembership.isPending}
+                                            />
+                                        ))}
                                     </div>
                                 ) : (
                                     <div className="text-center py-4 bg-white rounded border border-dashed text-gray-500 text-sm">
@@ -195,7 +147,15 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                             </div>
 
                             {showAssignForm && (
-                                <form onSubmit={handleAssign} className="bg-blue-50 rounded-lg p-4 space-y-3">
+                                <form onSubmit={handleAssign} className="relative bg-blue-50 rounded-lg p-4 space-y-3">
+                                    <button
+                                        type="button"
+                                        onClick={handleToggleAssignForm}
+                                        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                                        aria-label="Close"
+                                    >
+                                        <span className="text-lg">✕</span>
+                                    </button>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
                                         <select
@@ -234,8 +194,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                                 const plan = plans?.find(p => p.id === selectedPlanId);
                                                 if (!plan) return null;
 
-                                                // Simple client-side preview (backend is source of truth)
-                                                // Just showing the duration here is often enough
                                                 return (
                                                     <p>
                                                         <span className="font-medium">Duration:</span> {' '}
@@ -251,7 +209,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         disabled={assignMembership.isPending}
                                         className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                                     >
-                                        {assignMembership.isPending ? 'Assigning...' : 'Assign Membership'}
+                                        {assignMembership.isPending ? 'Adding...' : 'Add Membership'}
                                     </button>
                                 </form>
                             )}
