@@ -44,6 +44,14 @@ export interface Checkin {
     checkedInAt: string;
 }
 
+export interface MembershipWithPlan {
+    id: string;
+    planName: string;
+    startDate: string;
+    endDate: string;
+    cancelledAt: string | null;
+}
+
 // API Response Types
 
 export interface MemberSummary {
@@ -58,6 +66,7 @@ export interface MemberSummary {
         endDate: string;
         cancelledAt: string | null;
     } | null;
+    memberships: MembershipWithPlan[];
     lastCheckinAt: string | null;
     checkinCount30Days: number;
 }

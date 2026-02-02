@@ -15,7 +15,7 @@ jest.unstable_mockModule('../../repositories/memberRepository.js', () => ({
 
 jest.unstable_mockModule('../../repositories/membershipRepository.js', () => ({
     membershipRepository: {
-        findActiveByMemberId: jest.fn(),
+        findAllByMemberId: jest.fn(),
         hasActiveMembership: jest.fn(),
     }
 }));
@@ -135,7 +135,7 @@ describe('memberService', () => {
 
         it('should return complete member summary with active membership', async () => {
             mockMemberRepository.findById.mockResolvedValue(member);
-            mockMembershipRepository.findActiveByMemberId.mockResolvedValue(activeMembership);
+            mockMembershipRepository.findAllByMemberId.mockResolvedValue([activeMembership]);
             mockCheckinRepository.getStatsByMemberId.mockResolvedValue(checkinStats);
 
             const result = await memberService.getSummary('uuid-1');
@@ -146,6 +146,7 @@ describe('memberService', () => {
                 email: member.email,
                 joinDate: member.joinDate,
                 activeMembership,
+                memberships: [activeMembership],
                 lastCheckinAt: checkinStats.lastCheckinAt,
                 checkinCount30Days: checkinStats.checkinCount30Days,
             });
@@ -158,7 +159,7 @@ describe('memberService', () => {
                 .rejects
                 .toThrow(NotFoundError);
 
-            expect(mockMembershipRepository.findActiveByMemberId).not.toHaveBeenCalled();
+            expect(mockMembershipRepository.findAllByMemberId).not.toHaveBeenCalled();
         });
     });
 });

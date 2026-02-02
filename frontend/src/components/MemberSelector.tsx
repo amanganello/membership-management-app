@@ -58,7 +58,7 @@ export function MemberSelector({
                                 <button
                                     type="button"
                                     onClick={() => handleSelect(member)}
-                                    className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-b-0 transition-colors"
+                                    className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b last:border-b-0 transition-colors cursor-pointer"
                                 >
                                     <p className="font-medium text-gray-900">{member.name}</p>
                                     <p className="text-sm text-gray-500">{member.email}</p>

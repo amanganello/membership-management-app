@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
-import { formatDate, formatDateTime, calculateMinStartDate } from '@/lib/utils';
+import { formatDate, formatDateTime, calculateMinStartDate, getMembershipStatus } from '@/lib/utils';
 import { MEMBERSHIP_STATUS_TEXT, UI_TEXT } from '@/lib/constants';
 
 interface MemberSummaryModalProps {
@@ -40,14 +40,13 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
         }
     };
 
-    const handleCancel = async () => {
-        if (!member?.activeMembership) return;
-        const today = new Date().toISOString().split('T')[0];
+
+    const handleCancelMembership = async (membershipId: string) => {
 
         try {
             await cancelMembership.mutateAsync({
-                id: member.activeMembership.id,
-                data: { cancelDate: today },
+                id: membershipId,
+                data: { cancelDate: new Date().toISOString().split('T')[0]! },
             });
         } catch {
             // Error handled by React Query
@@ -60,12 +59,21 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
 
         if (nextState) {
             // Auto-fill with the valid minimum date (Today or Next Day after active plan)
-            const minDate = calculateMinStartDate(member?.activeMembership?.endDate);
+            // find the latest end date from memberships
+            const latestMembership = member?.memberships?.reduce((latest, current) => {
+                return current.endDate > latest.endDate ? current : latest;
+            }, member.memberships[0]);
+
+            const minDate = calculateMinStartDate(latestMembership?.endDate);
             setStartDate(minDate);
         }
     };
 
-    const minStartDate = calculateMinStartDate(member?.activeMembership?.endDate);
+    // Calculate generic min start date based on any active/future plans
+    const latestEndDate = member?.memberships && member.memberships.length > 0
+        ? member.memberships.reduce((max, m) => m.endDate > max ? m.endDate : max, member.memberships[0].endDate)
+        : undefined;
+    const minStartDate = calculateMinStartDate(latestEndDate);
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -75,7 +83,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                 <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-4 lg:p-6">
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
                     >
                         ✕
                     </button>
@@ -99,64 +107,89 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                             </div>
 
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h3 className="font-medium text-gray-900 mb-2">{UI_TEXT.MEMBERSHIP_STATUS_HEADER}</h3>
-                                {member.activeMembership ? (
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            {member.activeMembership.cancelledAt ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                    {MEMBERSHIP_STATUS_TEXT.SCHEDULED_TO_CANCEL}
-                                                </span>
-                                            ) : new Date(member.activeMembership.endDate).toISOString().split('T')[0] === new Date().toISOString().split('T')[0] ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                                    {MEMBERSHIP_STATUS_TEXT.ENDS_TODAY}
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    {MEMBERSHIP_STATUS_TEXT.ACTIVE}
-                                                </span>
-                                            )}
-                                            <span className="font-medium">{member.activeMembership.planName}</span>
-                                        </div>
-                                        <p className="text-sm text-gray-500">
-                                            {formatDate(member.activeMembership.startDate)} → {formatDate(member.activeMembership.endDate)}
-                                        </p>
+                                <div className="flex justify-between items-center mb-3">
+                                    <h3 className="font-medium text-gray-900">{UI_TEXT.MEMBERSHIP_STATUS_HEADER}</h3>
+                                    <button
+                                        onClick={handleToggleAssignForm}
+                                        className="text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                                    >
+                                        {showAssignForm ? 'Cancel New' : UI_TEXT.ASSIGN_MEMBERSHIP_ACTION}
+                                    </button>
+                                </div>
 
-                                        {member.activeMembership.cancelledAt && (
-                                            <p className="text-xs text-yellow-700 mt-1">
-                                                {UI_TEXT.ACCESS_UNTIL_PREFIX} {formatDate(member.activeMembership.endDate)}
-                                            </p>
-                                        )}
+                                {member.memberships && member.memberships.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {member.memberships.map((membership) => {
+                                            const status = getMembershipStatus(membership);
+                                            const { isCancelled, isEndsToday, isActive, isFuture } = status;
 
-                                        <div className="flex gap-4 pt-2">
-                                            {!member.activeMembership.cancelledAt && new Date(member.activeMembership.endDate).toISOString().split('T')[0] !== new Date().toISOString().split('T')[0] && (
-                                                <button
-                                                    onClick={handleCancel}
-                                                    disabled={cancelMembership.isPending}
-                                                    className="text-sm text-red-600 hover:text-red-700"
-                                                >
-                                                    {cancelMembership.isPending ? UI_TEXT.CANCELING_BUTTON : UI_TEXT.CANCEL_MEMBERSHIP_BUTTON}
-                                                </button>
-                                            )}
-                                            <button
-                                                onClick={handleToggleAssignForm}
-                                                className="text-sm text-blue-600 hover:text-blue-700"
-                                            >
-                                                {UI_TEXT.SCHEDULE_RENEWAL_ACTION}
-                                            </button>
-                                        </div>
+                                            const shouldShowCancel = (isActive || isEndsToday || isFuture) && !isCancelled;
+
+                                            console.log(`[Membership] ID: ${membership.id} | Plan: ${membership.planName}`, {
+                                                isCancelled,
+                                                isEndsToday,
+                                                isActive,
+                                                isFuture,
+                                                shouldShowCancel,
+                                                dates: {
+                                                    start: membership.startDate,
+                                                    end: membership.endDate,
+                                                    cancelledAt: membership.cancelledAt
+                                                }
+                                            });
+
+                                            return (
+                                                <div key={membership.id} className="bg-white border rounded-md p-3 shadow-sm">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <div className="flex items-center gap-2">
+                                                            {isCancelled ? (
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                                    {MEMBERSHIP_STATUS_TEXT.SCHEDULED_TO_CANCEL}
+                                                                </span>
+                                                            ) : isEndsToday ? (
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                                                                    {MEMBERSHIP_STATUS_TEXT.ENDS_TODAY}
+                                                                </span>
+                                                            ) : isActive ? (
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                                    {MEMBERSHIP_STATUS_TEXT.ACTIVE}
+                                                                </span>
+                                                            ) : isFuture ? (
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                                    Future
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                                    Expired
+                                                                </span>
+                                                            )}
+                                                            <span className="font-medium text-gray-900">{membership.planName}</span>
+                                                        </div>
+                                                        {shouldShowCancel && (
+                                                            <button
+                                                                onClick={() => handleCancelMembership(membership.id)}
+                                                                disabled={cancelMembership.isPending}
+                                                                className="text-xs text-red-600 hover:text-red-700 underline cursor-pointer"
+                                                            >
+                                                                {cancelMembership.isPending ? 'Canceling...' : 'Cancel'}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-sm text-gray-500">
+                                                        {formatDate(membership.startDate)} → {formatDate(membership.endDate)}
+                                                    </p>
+                                                    {isCancelled && (
+                                                        <p className="text-xs text-yellow-700 mt-1">
+                                                            Cancelled on {formatDate(membership.cancelledAt!)}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 ) : (
-                                    <div>
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            {UI_TEXT.NO_ACTIVE_MEMBERSHIP}
-                                        </span>
-                                        <button
-                                            onClick={handleToggleAssignForm}
-                                            className="block mt-2 text-sm text-blue-600 hover:text-blue-700"
-                                        >
-                                            {UI_TEXT.ASSIGN_MEMBERSHIP_ACTION}
-                                        </button>
+                                    <div className="text-center py-4 bg-white rounded border border-dashed text-gray-500 text-sm">
+                                        {UI_TEXT.NO_ACTIVE_MEMBERSHIP}
                                     </div>
                                 )}
                             </div>
@@ -216,7 +249,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                     <button
                                         type="submit"
                                         disabled={assignMembership.isPending}
-                                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                                     >
                                         {assignMembership.isPending ? 'Assigning...' : 'Assign Membership'}
                                     </button>

@@ -36,7 +36,7 @@ export const membershipRepository = {
         return (result.rows[0] as Membership) ?? null;
     },
 
-    async findActiveByMemberId(memberId: string): Promise<ActiveMembershipInfo | null> {
+    async findAllByMemberId(memberId: string): Promise<ActiveMembershipInfo[]> {
         const result = await pool.query(
             `SELECT m.id, p.name as "planName", 
               m.start_date as "startDate", m.end_date as "endDate",
@@ -44,13 +44,10 @@ export const membershipRepository = {
        FROM memberships m
        JOIN plans p ON m.plan_id = p.id
        WHERE m.member_id = $1 
-         AND m.start_date <= CURRENT_DATE 
-         AND m.end_date >= CURRENT_DATE
-       ORDER BY m.end_date DESC
-       LIMIT 1`,
+       ORDER BY m.end_date DESC`,
             [memberId]
         );
-        return (result.rows[0] as ActiveMembershipInfo) ?? null;
+        return result.rows as ActiveMembershipInfo[];
     },
 
     async hasActiveMembership(memberId: string): Promise<boolean> {

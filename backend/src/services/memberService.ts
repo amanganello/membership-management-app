@@ -28,8 +28,12 @@ export const memberService = {
             throw new NotFoundError('Member');
         }
 
-        // Get active membership
-        const activeMembership = await membershipRepository.findActiveByMemberId(id);
+        // Get all memberships
+        const memberships = await membershipRepository.findAllByMemberId(id);
+        const today = new Date().toISOString().split('T')[0]!;
+        const activeMembership = memberships.find(m =>
+            m.startDate <= today && m.endDate >= today
+        ) || null;
 
         // Get checkin stats
         const checkinStats = await checkinRepository.getStatsByMemberId(id);
@@ -40,6 +44,7 @@ export const memberService = {
             email: member.email,
             joinDate: member.joinDate,
             activeMembership,
+            memberships,
             lastCheckinAt: checkinStats.lastCheckinAt,
             checkinCount30Days: checkinStats.checkinCount30Days
         };

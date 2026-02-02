@@ -110,14 +110,14 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting || createMember.isPending}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
                             >
                                 {isSubmitting || createMember.isPending ? 'Creating...' : 'Create Member'}
                             </button>

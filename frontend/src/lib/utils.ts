@@ -60,3 +60,31 @@ export const createMemberSchema = z.object({
 });
 
 export type CreateMemberInput = z.infer<typeof createMemberSchema>;
+
+export interface MembershipStatus {
+    isCancelled: boolean;
+    isFuture: boolean;
+    isExpired: boolean;
+    isActive: boolean;
+    isEndsToday: boolean;
+}
+
+export function getMembershipStatus(membership: {
+    startDate: string;
+    endDate: string;
+    cancelledAt: string | null;
+}): MembershipStatus {
+    const today = new Date().toISOString().split('T')[0]!;
+
+    // Normalize DB dates to YYYY-MM-DD (remove time part)
+    const startDate = membership.startDate.split('T')[0]!;
+    const endDate = membership.endDate.split('T')[0]!;
+
+    const isCancelled = !!membership.cancelledAt;
+    const isFuture = startDate > today;
+    const isExpired = endDate < today;
+    const isActive = !isFuture && !isExpired && !isCancelled;
+    const isEndsToday = !isCancelled && endDate === today;
+
+    return { isCancelled, isFuture, isExpired, isActive, isEndsToday };
+}
