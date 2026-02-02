@@ -125,6 +125,7 @@ describe('memberService', () => {
             planName: 'Premium',
             startDate: '2026-01-01',
             endDate: '2026-12-31',
+            cancelledAt: null,
         };
 
         const checkinStats = {

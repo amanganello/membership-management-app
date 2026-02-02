@@ -10,7 +10,7 @@ export const validate = (schema: z.ZodSchema) => {
             next();
         } catch (error) {
             if (error instanceof z.ZodError) {
-                const messages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+                const messages = (error as z.ZodError).issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
                 next(new AppError(400, messages, 'VALIDATION_ERROR'));
                 return;
             }
@@ -27,7 +27,7 @@ export const validateParams = (schema: z.ZodSchema) => {
             next();
         } catch (error) {
             if (error instanceof z.ZodError) {
-                const messages = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+                const messages = (error as z.ZodError).issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
                 next(new AppError(400, messages, 'VALIDATION_ERROR'));
                 return;
             }

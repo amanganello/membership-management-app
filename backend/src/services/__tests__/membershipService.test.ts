@@ -21,6 +21,7 @@ jest.unstable_mockModule('../../repositories/memberRepository.js', () => ({
 jest.unstable_mockModule('../../repositories/planRepository.js', () => ({
     planRepository: {
         exists: jest.fn(),
+        findById: jest.fn(),
     }
 }));
 
@@ -55,17 +56,28 @@ describe('membershipService', () => {
             endDate: '2026-12-31',
             createdAt: '2026-01-01T00:00:00.000Z',
             updatedAt: '2026-01-01T00:00:00.000Z',
+            cancelledAt: null,
         };
 
         it('should create membership with valid data', async () => {
             mockMemberRepository.exists.mockResolvedValue(true);
             mockPlanRepository.exists.mockResolvedValue(true);
+            mockPlanRepository.findById.mockResolvedValue({
+                id: 'plan-uuid',
+                name: 'Basic Plan',
+                monthlyCost: '10.00',
+                durationValue: 1,
+                durationUnit: 'year',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
             mockMembershipRepository.create.mockResolvedValue(createdMembership);
 
             const result = await membershipService.assign(validAssignData);
 
             expect(mockMemberRepository.exists).toHaveBeenCalledWith('member-uuid');
-            expect(mockPlanRepository.exists).toHaveBeenCalledWith('plan-uuid');
+            expect(mockMemberRepository.exists).toHaveBeenCalledWith('member-uuid');
+            expect(mockPlanRepository.findById).toHaveBeenCalledWith('plan-uuid');
             expect(mockMembershipRepository.create).toHaveBeenCalledWith(validAssignData);
             expect(result).toEqual(createdMembership);
         });
@@ -77,13 +89,13 @@ describe('membershipService', () => {
                 .rejects
                 .toThrow(NotFoundError);
 
-            expect(mockPlanRepository.exists).not.toHaveBeenCalled();
+            expect(mockPlanRepository.findById).not.toHaveBeenCalled();
             expect(mockMembershipRepository.create).not.toHaveBeenCalled();
         });
 
         it('should throw NotFoundError when plan does not exist', async () => {
             mockMemberRepository.exists.mockResolvedValue(true);
-            mockPlanRepository.exists.mockResolvedValue(false);
+            mockPlanRepository.findById.mockResolvedValue(null);
 
             await expect(membershipService.assign(validAssignData))
                 .rejects
@@ -94,7 +106,15 @@ describe('membershipService', () => {
 
         it('should throw ValidationError when start date is after end date', async () => {
             mockMemberRepository.exists.mockResolvedValue(true);
-            mockPlanRepository.exists.mockResolvedValue(true);
+            mockPlanRepository.findById.mockResolvedValue({
+                id: 'plan-uuid',
+                name: 'Basic Plan',
+                monthlyCost: '10.00',
+                durationValue: 1,
+                durationUnit: 'year',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
 
             const invalidData = {
                 ...validAssignData,
@@ -111,7 +131,15 @@ describe('membershipService', () => {
 
         it('should throw ConflictError for overlapping memberships', async () => {
             mockMemberRepository.exists.mockResolvedValue(true);
-            mockPlanRepository.exists.mockResolvedValue(true);
+            mockPlanRepository.findById.mockResolvedValue({
+                id: 'plan-uuid',
+                name: 'Basic Plan',
+                monthlyCost: '10.00',
+                durationValue: 1,
+                durationUnit: 'year',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
 
             const dbError = new Error('exclusion constraint violation') as Error & { code: string };
             dbError.code = '23P01';
@@ -136,6 +164,7 @@ describe('membershipService', () => {
             endDate: futureDate,
             createdAt: '2026-01-01T00:00:00.000Z',
             updatedAt: '2026-01-01T00:00:00.000Z',
+            cancelledAt: null,
         };
 
         it('should cancel an active membership', async () => {
