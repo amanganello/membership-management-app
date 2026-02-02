@@ -4,57 +4,208 @@
 
 An internal member-management tool for fitness business staff. Designed as an MVP with minimal complexity.
 
-**Constraints:**
-- 🏢 **Scope:** Internal staff tool only
-- 🔓 **Auth:** None required (MVP)
-- ✅ **Check-in:** Simple button click
-
-**Stack:**
-| Layer | Technology |
-|-------|------------|
-| Frontend | React + Vite + TypeScript |
-| Backend | Node.js + Express + TypeScript |
-| Database | PostgreSQL |
-| Local Dev | Docker Compose |
-| Target Cloud | AWS (S3, ECS, RDS) |
-
 ---
 
-## Member Check-in Data Flow
+## Data Flows
+
+### 1. Add Member Data Flow
+
+Staff clicks "Add Member" → Enters details → Record saved.
+
+```
+1. FORM SUBMISSION
+   └── Staff fills Name and Email in AddMemberModal
+   └── Clicks "Create Member"
+
+2. REACT STATE
+   └── onSubmit calls useCreateMember().mutateAsync()
+   └── Client-side validation (HTML5 required/email)
+
+3. API REQUEST
+   └── POST /api/members
+   └── Body: { name: "Alice", email: "alice@example.com" }
+
+4. SERVICE LAYER
+   └── memberService.create(data)
+   └── Checks email uniqueness (memberRepository.emailExists)
+   └── Throws 409 if email exists
+
+5. DATABASE INSERT
+   └── INSERT INTO members (name, email)
+   └── VALUES ($1, $2) RETURNING id...
+
+6. RESPONSE
+   └── 201 Created → { id, name, email ... }
+   └── React invalidates 'members' query → Table updates
+```
+
+```mermaid
+sequenceDiagram
+    participant Staff
+    participant React
+    participant API
+    participant DB
+
+    Staff->>React: Fill Form & Submit
+    React->>API: POST /api/members
+    API->>DB: Check Email Exists?
+    alt Email Taken
+        DB-->>API: Yes
+        API-->>React: 409 Conflict
+        React-->>Staff: Show Error
+    else Email Available
+        API->>DB: INSERT INTO members
+        DB-->>API: Member Record
+        API-->>React: 201 Created
+        React-->>Staff: Close Modal & Refresh List
+    end
+```
+
+### 2. Assign Membership Data Flow
+
+Staff selects Plan → System calculates End Date → Records active period.
+
+```
+1. SELECTION
+   └── Staff opens Member Summary → Clicks "Assign Membership"
+   └── Selects Plan (e.g., "Monthly Pro") and Start Date
+
+2. REACT STATE
+   └── useAssignMembership().mutateAsync({ memberId, planId, startDate })
+
+3. API REQUEST
+   └── POST /api/memberships
+   └── Body: { memberId: "...", planId: "...", startDate: "2026-02-01" }
+
+4. SERVICE LAYER
+   └── membershipService.assign(data)
+   └── Fetches Plan details to calculate End Date (e.g., +1 Month)
+   └── Validates constraints (Start < End)
+
+5. DATABASE INSERT
+   └── INSERT INTO memberships ...
+   └── DB Constraint EXCLUDE checks for overlapping dates
+   └── Throws 23P01 (409) if overlap found
+
+6. RESPONSE
+   └── 201 Created → { id, startDate, endDate ... }
+   └── React updates Member Summary UI
+```
+
+```mermaid
+sequenceDiagram
+    participant Staff
+    participant React
+    participant API
+    participant DB
+
+    Staff->>React: Select Plan & Assign
+    React->>API: POST /api/memberships
+    API->>DB: Fetch Plan Details
+    API->>API: Calculate End Date
+    API->>DB: INSERT (with overlap check)
+    alt Overlap Detected
+        DB-->>API: Error 23P01
+        API-->>React: 409 Conflict
+        React-->>Staff: Show "Membership Overlap" Error
+    else Success
+        DB-->>API: New Membership
+        API-->>React: 201 Created
+        React-->>Staff: Update Summary UI
+    end
+```
+
+### 3. View Member Summary Data Flow
+
+Staff clicks Member → System aggregates profile, status, and stats.
+
+```
+1. UI ACTION
+   └── Staff clicks a member row in MemberTable
+   └── React opens MemberSummaryModal
+
+2. REACT HOOK
+   └── useMemberSummary(id) calls api.members.getSummary(id)
+
+3. API REQUEST
+   └── GET /api/members/:id
+   └── Params: { id: "uuid-123" }
+
+4. SERVICE LAYER
+   └── memberService.getSummary(id)
+   └── PARALLEL FETCHING:
+       ├── memberRepository.findById(id)
+       ├── membershipRepository.findActiveByMemberId(id)
+       └── checkinRepository.getStatsByMemberId(id)
+
+5. RESPONSE_ASSEMBLY
+   └── Combines data into MemberSummary object
+   └── Returns { id, name, activeMembership, checkinCount30Days ... }
+
+6. UI RENDER
+   └── Modal displays Profile, Current Status (Active/Inactive), and Stats
+```
+
+```mermaid
+sequenceDiagram
+    participant Staff
+    participant React
+    participant API
+    participant DB
+
+    Staff->>React: Click Member Row
+    React->>API: GET /api/members/:id
+    par Fetch Data
+        API->>DB: Get Profile
+        API->>DB: Get Active Plan
+        API->>DB: Get Check-in Stats
+    end
+    DB-->>API: Return Data
+    API-->>React: 200 OK (Summary JSON)
+    React-->>Staff: Show Summary Modal
+```
+
+### 4. Member Check-in Data Flow
 
 ### Flow Description
 
-Staff clicks "Check In" button → Record saved to database.
+Staff searches for member → Selects member → Clicks "Check In" → Success Toast.
 
 ```
-1. BUTTON CLICK
-   └── Staff clicks "Check In" on member's row in the UI
+1. SEARCH & SELECT
+   └── Staff types name in "Search Member" input
+   └── Selects member from autocomplete results
+   └── UI shows "Selected Member" card with status
 
-2. REACT STATE
-   └── onClick handler calls checkinMember(memberId)
+2. CHECK IN CLICK
+   └── Staff clicks "Check In" button for selected member
+
+3. REACT STATE
+   └── onSubmit handler calls handleCheckin()
+   └── Invokes mutation: createCheckin.mutateAsync()
    └── Sets loading state on button
 
-3. API REQUEST
+4. API REQUEST
    └── POST /api/checkins
    └── Body: { memberId: "uuid-123" }
    └── No auth headers (MVP)
 
-4. EXPRESS ROUTE
+5. EXPRESS ROUTE
    └── Router receives POST /api/checkins
    └── Extracts memberId from request body
 
-5. SERVICE LAYER
-   └── CheckinService.create(memberId)
+6. SERVICE LAYER
+   └── checkinService.recordCheckin(memberId)
    └── Validates member exists
    └── Validates membership is active (endDate >= CURRENT_DATE)
    └── Creates timestamp
 
-6. DATABASE INSERT
+7. DATABASE INSERT
    └── INSERT INTO checkins (id, member_id, checked_in_at)
    └── VALUES (gen_random_uuid(), $1, NOW())
    └── Returns created record
 
-7. RESPONSE
+8. RESPONSE
    └── 201 Created → { id, memberId, checkedInAt }
    └── React clears loading, shows success toast
 ```
@@ -68,6 +219,12 @@ sequenceDiagram
     participant API as Express API
     participant DB as PostgreSQL
 
+    Staff->>React: Type "Alice" in Search
+    React->>API: GET /api/members?query=Alice
+    API-->>React: [Member List]
+    Staff->>React: Select "Alice"
+    React->>React: Show Member Card (Status)
+    
     Staff->>React: Click "Check In" button
     React->>React: Set loading state
     React->>API: POST /api/checkins<br/>{ memberId }
@@ -76,57 +233,6 @@ sequenceDiagram
     API-->>React: 201 { id, memberId, checkedInAt }
     React->>React: Clear loading
     React-->>Staff: Show success toast ✓
-```
-
----
-
-## Solution Diagrams
-
-### Local Development (Docker Compose)
-
-```mermaid
-graph TB
-    subgraph "Docker Compose"
-        subgraph "frontend"
-            VITE["Vite Dev Server<br/>:8080"]
-        end
-        
-        subgraph "api"
-            EXPRESS["Express API<br/>:3000"]
-        end
-        
-        subgraph "db"
-            PG["PostgreSQL<br/>:5432"]
-            VOL[("pgdata volume")]
-        end
-    end
-    
-    BROWSER["localhost:8080"] --> VITE
-    VITE -->|"/api/* proxy"| EXPRESS
-    EXPRESS -->|"pg connection"| PG
-    PG --> VOL
-
-    style VITE fill:#646cff,color:#fff
-    style EXPRESS fill:#68a063,color:#fff
-    style PG fill:#336791,color:#fff
-```
-
-**docker-compose.yml structure:**
-```yaml
-services:
-  frontend:    # Vite + React
-    ports: ["8080:8080"]
-    depends_on: [api]
-    
-  api:         # Express + TypeScript
-    ports: ["3000:3000"]
-    depends_on: [db]
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/memberapp
-    
-  db:          # PostgreSQL
-    ports: ["5432:5432"]
-    volumes: [pgdata:/var/lib/postgresql/data]
 ```
 
 ---
