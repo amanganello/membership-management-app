@@ -13,7 +13,6 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
     return (
         <div className="flex flex-col lg:flex-row h-screen bg-gray-50">
-            {/* Sidebar */}
             <aside className="w-full lg:w-64 bg-gray-900 text-white flex flex-col shrink-0">
                 <div className="p-4 lg:p-6 flex lg:block items-center justify-between">
                     <div>
@@ -43,7 +42,6 @@ export function Layout({ children }: LayoutProps) {
                 </nav>
             </aside>
 
-            {/* Main Content */}
             <main className="flex-1 overflow-auto">
                 <div className="p-4 lg:p-8">
                     {children}

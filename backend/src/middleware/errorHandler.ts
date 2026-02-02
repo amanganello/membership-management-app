@@ -17,7 +17,6 @@ export const errorHandler = (
     res: Response<ErrorResponse>,
     _next: NextFunction
 ): void => {
-    // Log with full context
     logger.error({
         err,
         requestId: req.id,
@@ -25,7 +24,6 @@ export const errorHandler = (
         url: req.url,
     }, 'Request failed');
 
-    // Handle our custom AppError
     if (err instanceof AppError) {
         res.status(err.statusCode).json({
             error: {
@@ -64,7 +62,6 @@ export const errorHandler = (
         return;
     }
 
-    // Generic server error
     res.status(500).json({
         error: {
             message: 'Internal server error',

@@ -37,14 +37,12 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4">
-                {/* Backdrop */}
                 <div
                     className="fixed inset-0 bg-black/50 transition-opacity"
                     onClick={onClose}
                     aria-hidden="true"
                 />
 
-                {/* Modal */}
                 <div
                     className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-4 lg:p-6"
                     role="dialog"
