@@ -73,7 +73,7 @@ export interface AssignMembershipDto {
     memberId: string;
     planId: string;
     startDate: string; // YYYY-MM-DD
-    endDate?: string;  // YYYY-MM-DD (Optional - calculated from plan duration if omitted)
+    endDate?: string;
 }
 
 export interface CancelMembershipDto {
