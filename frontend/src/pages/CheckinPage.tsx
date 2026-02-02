@@ -50,12 +50,10 @@ export function CheckinPage() {
 
             <div className="mt-8 max-w-md">
                 <div className="bg-white rounded-lg shadow p-6">
-                    {/* Member Search */}
                     {!selectedMember && (
                         <MemberSelector onSelect={handleSelectMember} />
                     )}
 
-                    {/* Selected Member Check-in Form */}
                     {selectedMember && (
                         <form onSubmit={handleCheckin}>
                             <div className="p-4 bg-blue-50 rounded-lg">
@@ -84,7 +82,6 @@ export function CheckinPage() {
                         </form>
                     )}
 
-                    {/* Message */}
                     {message && (
                         <div
                             role="alert"

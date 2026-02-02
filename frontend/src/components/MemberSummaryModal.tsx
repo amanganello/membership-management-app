@@ -90,7 +90,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
 
                     {member && (
                         <div className="space-y-6">
-                            {/* Header */}
                             <div>
                                 <h2 className="text-xl font-semibold text-gray-900">{member.name}</h2>
                                 <p className="text-gray-500">{member.email}</p>
@@ -99,7 +98,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 </p>
                             </div>
 
-                            {/* Membership Status */}
                             <div className="bg-gray-50 rounded-lg p-4">
                                 <h3 className="font-medium text-gray-900 mb-2">{UI_TEXT.MEMBERSHIP_STATUS_HEADER}</h3>
                                 {member.activeMembership ? (
@@ -163,7 +161,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 )}
                             </div>
 
-                            {/* Assign Form */}
                             {showAssignForm && (
                                 <form onSubmit={handleAssign} className="bg-blue-50 rounded-lg p-4 space-y-3">
                                     <div>
@@ -198,7 +195,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         />
                                     </div>
 
-                                    {/* Preview Duration/End Date */}
                                     {selectedPlanId && startDate && (
                                         <div className="bg-white/50 p-3 rounded text-sm text-gray-600">
                                             {(() => {
@@ -227,7 +223,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 </form>
                             )}
 
-                            {/* Check-in Stats */}
                             <div className="bg-gray-50 rounded-lg p-4">
                                 <h3 className="font-medium text-gray-900 mb-2">{UI_TEXT.CHECKIN_ACTIVITY_HEADER}</h3>
                                 <div className="grid grid-cols-2 gap-4">

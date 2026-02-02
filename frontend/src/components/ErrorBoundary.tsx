@@ -24,7 +24,17 @@ export class ErrorBoundary extends Component<Props, State> {
         if (import.meta.env.DEV) {
             console.error('Uncaught error:', error, errorInfo);
         }
-        // TODO: Send to error reporting service (Sentry, LogRocket, etc.)
+        /**
+         * PRODUCTION LOGGING STRATEGY:
+         * In a production environment, this error should be sent to an observability platform
+         * (e.g., Sentry, Datadog, LogRocket) to enable proactive monitoring.
+         * 
+         * The log entry should include:
+         * 1. The Error Stack Trace (for debugging).
+         * 2. The Component Stack (from errorInfo) to identify the crash location.
+         * 3. User Metadata (ID, Role) for impact analysis (ensure PII is sanitized).
+         * 4. Application State context (if available).
+         */
     }
 
     public render() {

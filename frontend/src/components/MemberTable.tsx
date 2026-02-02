@@ -27,7 +27,6 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
 
     return (
         <div className="bg-white rounded-lg shadow">
-            {/* Desktop Table - Hidden on Mobile */}
             <div className="hidden sm:block">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -65,7 +64,6 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
                 </table>
             </div>
 
-            {/* Mobile Card List - Shown only on Mobile */}
             <div className="block sm:hidden divide-y divide-gray-200">
                 {members.map((member) => (
                     <div

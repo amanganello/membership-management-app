@@ -14,12 +14,12 @@ export const logger = pino({
             },
         }
         : undefined,
-    // Redact sensitive fields (PII)
+
     redact: {
         paths: [
             'req.headers.authorization',
             'req.body.password',
-            'req.body.email', // Optionally redact in logs
+            'req.body.email',
             '*.password',
             '*.token',
         ],
