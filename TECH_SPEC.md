@@ -164,8 +164,8 @@ To prevent double-assignment or overlapping memberships if two staff members cli
 
 ## 5. Roadmap ("If More Time")
 
+-   **Frontend Performance**: Strict usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders.
 -   **Scalable Pagination**: Move to Cursor/Seek-based pagination for high-volume lists.
--   **Authentication**: JWT-based staff logins and Role-Based Access Control (RBAC).
+-   **Comprehensive Testing Strategy**: Unit (Jest), Integration (Supertest), and E2E (Playwright) coverage to ensure system stability.
+-   **API Documentation**: Automated OpenAPI/Swagger generation for type-safe client consumption.
 -   **Observability**: Centralized logging (Pino) and error tracking (Sentry).
--   **Automated Testing**: Full E2E coverage for membership race conditions.
--   **Recurring Billing**: Stripe integration for automatic renewals.

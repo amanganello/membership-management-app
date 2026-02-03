@@ -378,14 +378,13 @@ try {
 
 ---
 
-### 6. 🔮 Future Product Features
-**Why:** Business value expansion.
-**Planned Features:**
-- **Authentication:** Staff login, JWT tokens, RBAC.
-- **Analytics:** Dashboard for check-in trends and peak hours.
-- **Engagement:** Automated emails for missed visits or renewals.
-- **QR Check-in:** Self-service kiosk mode.
-- **Payments:** Stripe integration for recurring billing.
+### 6. ⚡ Frontend Performance Optimization
 
+**Implementation:**
+- Usage of `useCallback` for event handlers passed to children.
+- `useMemo` for expensive derived state (filtering/sorting 1000+ members).
+- `React.memo` for table rows and list items to prevent unwanted re-renders.
+
+---
 
 *Document Version: 1.0 | Created: 2026-01-28*
