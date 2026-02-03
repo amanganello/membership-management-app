@@ -164,8 +164,9 @@ To prevent double-assignment or overlapping memberships if two staff members cli
 
 ## 5. Roadmap ("If More Time")
 
--   **Frontend Performance**: Strict usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders.
--   **Scalable Pagination**: Move to Cursor/Seek-based pagination for high-volume lists.
+-   **Frontend Performance**: Usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders.
+-   **Security Hardening**: Strict CORS policies to restrict origins and Header security (Helmet).
+-   **Backend Resilience**: Rate limiting (DoS protection) and optimized Database Connection Pooling.
 -   **Comprehensive Testing Strategy**: Unit (Jest), Integration (Supertest), and E2E (Playwright) coverage to ensure system stability.
 -   **API Documentation**: Automated OpenAPI/Swagger generation for type-safe client consumption.
 -   **Observability**: Centralized logging (Pino) and error tracking (Sentry).

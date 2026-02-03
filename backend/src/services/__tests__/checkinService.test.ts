@@ -51,7 +51,11 @@ describe('checkinService', () => {
             const result = await checkinService.recordCheckin(checkinData);
 
             expect(mockMemberRepository.exists).toHaveBeenCalledWith('member-uuid');
-            expect(mockMembershipRepository.hasActiveMembership).toHaveBeenCalledWith('member-uuid');
+            // hasActiveMembership now receives both memberId and a business date
+            expect(mockMembershipRepository.hasActiveMembership).toHaveBeenCalledWith(
+                'member-uuid',
+                expect.any(String)
+            );
             expect(mockCheckinRepository.create).toHaveBeenCalledWith(checkinData);
             expect(result).toEqual(createdCheckin);
         });

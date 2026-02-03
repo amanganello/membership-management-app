@@ -3,9 +3,18 @@ import { api } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 
 export function useMemberSummary(id: string | null) {
+    const memberId = id ?? null;
+
     return useQuery({
-        queryKey: queryKeys.members.detail(id!),
-        queryFn: () => api.members.getSummary(id!),
-        enabled: !!id,
+        queryKey: memberId
+            ? queryKeys.members.detail(memberId)
+            : queryKeys.members.detail('pending'),
+        queryFn: async () => {
+            if (!memberId) {
+                throw new Error('Member ID is required to fetch summary');
+            }
+            return api.members.getSummary(memberId);
+        },
+        enabled: !!memberId,
     });
 }

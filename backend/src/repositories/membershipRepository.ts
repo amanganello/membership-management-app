@@ -51,13 +51,13 @@ export const membershipRepository = {
         return result.rows as ActiveMembershipInfo[];
     },
 
-    async hasActiveMembership(memberId: string): Promise<boolean> {
+    async hasActiveMembership(memberId: string, businessDate: string): Promise<boolean> {
         const result = await pool.query(
             `SELECT 1 FROM memberships 
        WHERE member_id = $1 
-         AND start_date <= CURRENT_DATE 
-         AND end_date >= CURRENT_DATE`,
-            [memberId]
+         AND start_date <= $2::date 
+         AND end_date >= $2::date`,
+            [memberId, businessDate]
         );
         return result.rowCount !== null && result.rowCount > 0;
     },
@@ -65,14 +65,21 @@ export const membershipRepository = {
     async cancel(id: string, cancelDate: string): Promise<Membership | null> {
         const query = `
             UPDATE memberships 
-            SET cancelled_at = NOW(),
+            SET cancelled_at = $2::date,
                 updated_at = NOW()
             WHERE id = $1
               AND end_date >= (NOW() AT TIME ZONE '${APP_CONFIG.TIMEZONE}')::date 
               AND cancelled_at IS NULL
-            RETURNING *;
+            RETURNING id,
+                     member_id as "memberId",
+                     plan_id as "planId",
+                     start_date as "startDate",
+                     end_date as "endDate",
+                     cancelled_at as "cancelledAt",
+                     created_at as "createdAt",
+                     updated_at as "updatedAt";
         `;
-        const { rows } = await pool.query<Membership>(query, [id]);
+        const { rows } = await pool.query<Membership>(query, [id, cancelDate]);
         return rows[0] || null;
     }
 };
