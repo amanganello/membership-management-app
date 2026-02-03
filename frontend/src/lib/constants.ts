@@ -23,3 +23,7 @@ export const UI_TEXT = {
     LOADING_MEMBERS: 'Loading members...',
     NO_MEMBERS_FOUND: 'No members found',
 };
+
+export const APP_CONFIG = {
+    TIMEZONE: 'America/Montevideo',
+};

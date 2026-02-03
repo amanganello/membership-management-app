@@ -1,5 +1,6 @@
 import pool from '../config/database.js';
 import type { Membership, AssignMembershipDto } from '../types/index.js';
+import { APP_CONFIG } from '../config/constants.js';
 
 interface ActiveMembershipInfo {
     id: string;
@@ -62,18 +63,16 @@ export const membershipRepository = {
     },
 
     async cancel(id: string, cancelDate: string): Promise<Membership | null> {
-        const result = await pool.query(
-            `UPDATE memberships 
-       SET cancelled_at = NOW()
-       WHERE id = $1 
-         AND end_date >= (NOW() AT TIME ZONE 'America/Argentina/Buenos_Aires')::date 
-         AND cancelled_at IS NULL
-       RETURNING id, member_id as "memberId", plan_id as "planId", 
-                 start_date as "startDate", end_date as "endDate",
-                 cancelled_at as "cancelledAt",
-                 created_at as "createdAt", updated_at as "updatedAt"`,
-            [id]
-        );
-        return (result.rows[0] as Membership) ?? null;
+        const query = `
+            UPDATE memberships 
+            SET cancelled_at = NOW(),
+                updated_at = NOW()
+            WHERE id = $1
+              AND end_date >= (NOW() AT TIME ZONE '${APP_CONFIG.TIMEZONE}')::date 
+              AND cancelled_at IS NULL
+            RETURNING *;
+        `;
+        const { rows } = await pool.query<Membership>(query, [id]);
+        return rows[0] || null;
     }
 };

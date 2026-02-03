@@ -1,24 +1,26 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { z } from 'zod';
+import { APP_CONFIG } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
 // Hardcoded business timezone for consistency with backend
-const BUSINESS_TIMEZONE = 'America/Argentina/Buenos_Aires';
 
 /**
  * Returns YYYY-MM-DD in the business timezone
  */
-export function getLocalDateString(date: Date = new Date()): string {
-    return new Intl.DateTimeFormat('en-CA', {
-        timeZone: BUSINESS_TIMEZONE,
+
+export function getLocalDateString(): string {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: APP_CONFIG.TIMEZONE,
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
-    }).format(date);
+        day: '2-digit',
+    });
+    return formatter.format(new Date());
 }
 
 // Date formatting
