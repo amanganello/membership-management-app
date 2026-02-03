@@ -65,7 +65,7 @@ export function CheckinPage() {
                                     <button
                                         type="button"
                                         onClick={handleClearSelection}
-                                        className="text-gray-400 hover:text-gray-600"
+                                        className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                         aria-label="Clear selection"
                                     >
                                         ✕
@@ -74,7 +74,7 @@ export function CheckinPage() {
                                 <button
                                     type="submit"
                                     disabled={createCheckin.isPending}
-                                    className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50"
+                                    className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 cursor-pointer"
                                 >
                                     {createCheckin.isPending ? 'Checking in...' : '✅ Check In'}
                                 </button>

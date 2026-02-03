@@ -16,7 +16,7 @@ export const memberRepository = {
         const result = await pool.query(
             `SELECT id, name, email, join_date as "joinDate", created_at as "createdAt", updated_at as "updatedAt"
        FROM members 
-       ORDER BY name`
+       ORDER BY LOWER(name)`
         );
         return result.rows as Member[];
     },
@@ -27,7 +27,7 @@ export const memberRepository = {
             `SELECT id, name, email, join_date as "joinDate", created_at as "createdAt", updated_at as "updatedAt"
        FROM members 
        WHERE name ILIKE $1 OR email ILIKE $1
-       ORDER BY name`,
+       ORDER BY LOWER(name)`,
             [searchPattern]
         );
         return result.rows as Member[];
