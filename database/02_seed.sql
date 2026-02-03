@@ -23,7 +23,7 @@ INSERT INTO members (name, email, join_date) VALUES
   ('Mike Johnson', 'mike.j@example.com', '2025-12-01'),
   ('Sarah Williams', 'sarah.w@example.com', '2026-01-20'),
   ('Tom Brown', 'tom.brown@example.com', '2025-11-10'),
-  ('Alex Turner', 'alex.turner@example.com', CURRENT_DATE - INTERVAL '30 days');  -- Edge case: expires today
+  ('Alex Turner', 'atos@example.com', CURRENT_DATE - INTERVAL '30 days');  -- Edge case: expires today
 
 SELECT 'Seeded ' || COUNT(*) || ' members' AS status FROM members;
 
