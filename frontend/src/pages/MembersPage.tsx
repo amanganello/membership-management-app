@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useMembers } from '@/hooks/useMembers';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MemberTable } from '@/components/MemberTable';
@@ -15,9 +15,9 @@ export function MembersPage() {
 
     const { data: members = [], isLoading } = useMembers(debouncedSearch);
 
-    const handleRowClick = (member: Member) => {
+    const handleRowClick = useCallback((member: Member) => {
         setSelectedMemberId(member.id);
-    };
+    }, []);
 
     return (
         <div>

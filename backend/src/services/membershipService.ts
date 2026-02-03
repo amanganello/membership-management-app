@@ -1,3 +1,4 @@
+import { getBusinessDate } from '../utils/date.js';
 import { membershipRepository } from '../repositories/membershipRepository.js';
 import { memberRepository } from '../repositories/memberRepository.js';
 import { planRepository } from '../repositories/planRepository.js';
@@ -88,13 +89,13 @@ export const membershipService = {
         }
 
         // Check if membership is still active
-        const today = new Date().toISOString().split('T')[0];
-        if (membership.endDate < today!) {
+        const today = getBusinessDate();
+        if (membership.endDate < today) {
             throw new ValidationError('Cannot cancel an already expired membership');
         }
 
         // Cancel date validation
-        if (cancelDate < today!) {
+        if (cancelDate < today) {
             throw new ValidationError('Cancel date cannot be in the past');
         }
 

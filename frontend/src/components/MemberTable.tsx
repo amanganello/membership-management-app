@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Member } from '@memberapp/shared';
 import { formatDate } from '@/lib/utils';
 import { UI_TEXT } from '@/lib/constants';
@@ -8,7 +9,7 @@ interface MemberTableProps {
     onRowClick: (member: Member) => void;
 }
 
-export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps) {
+export const MemberTable = memo(function MemberTable({ members, isLoading, onRowClick }: MemberTableProps) {
     if (isLoading) {
         return (
             <div className="bg-white rounded-lg shadow p-8 text-center">
@@ -83,4 +84,4 @@ export function MemberTable({ members, isLoading, onRowClick }: MemberTableProps
             </div>
         </div>
     );
-}
+});

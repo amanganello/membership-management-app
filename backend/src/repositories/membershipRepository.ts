@@ -65,7 +65,9 @@ export const membershipRepository = {
         const result = await pool.query(
             `UPDATE memberships 
        SET cancelled_at = NOW()
-       WHERE id = $1 AND end_date >= CURRENT_DATE AND cancelled_at IS NULL
+       WHERE id = $1 
+         AND end_date >= (NOW() AT TIME ZONE 'America/Argentina/Buenos_Aires')::date 
+         AND cancelled_at IS NULL
        RETURNING id, member_id as "memberId", plan_id as "planId", 
                  start_date as "startDate", end_date as "endDate",
                  cancelled_at as "cancelledAt",
