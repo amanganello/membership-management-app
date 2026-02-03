@@ -6,14 +6,25 @@ import { UI_TEXT } from '@/lib/constants';
 interface MemberTableProps {
     members: Member[];
     isLoading: boolean;
+    isError?: boolean;
+    error?: Error | null;
     onRowClick: (member: Member) => void;
 }
 
-export const MemberTable = memo(function MemberTable({ members, isLoading, onRowClick }: MemberTableProps) {
+export const MemberTable = memo(function MemberTable({ members, isLoading, isError, error, onRowClick }: MemberTableProps) {
     if (isLoading) {
         return (
             <div className="bg-white rounded-lg shadow p-8 text-center">
                 <div className="animate-pulse text-gray-500">{UI_TEXT.LOADING_MEMBERS}</div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="bg-white rounded-lg shadow p-8 text-center text-red-600" role="alert">
+                <p className="font-medium">Failed to load members</p>
+                <p className="mt-1 text-sm text-gray-600">{error?.message ?? 'Please try again.'}</p>
             </div>
         );
     }

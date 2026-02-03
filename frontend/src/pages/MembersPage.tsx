@@ -13,7 +13,7 @@ export function MembersPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
-    const { data: members = [], isLoading } = useMembers(debouncedSearch);
+    const { data: members = [], isLoading, isError, error } = useMembers(debouncedSearch);
 
     const handleRowClick = useCallback((member: Member) => {
         setSelectedMemberId(member.id);
@@ -49,6 +49,8 @@ export function MembersPage() {
                 <MemberTable
                     members={members}
                     isLoading={isLoading}
+                    isError={isError}
+                    error={error}
                     onRowClick={handleRowClick}
                 />
             </div>
