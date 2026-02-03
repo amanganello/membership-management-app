@@ -58,7 +58,7 @@ INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
 
 -- Alex Turner: EDGE CASE - Monthly Pass expires exactly TODAY
 INSERT INTO memberships (member_id, plan_id, start_date, end_date) VALUES
-  ((SELECT id FROM members WHERE email = 'alex.turner@example.com'),
+  ((SELECT id FROM members WHERE email = 'atos@example.com'),
    (SELECT id FROM plans WHERE name = 'Monthly Pass'),
    CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE);
 
