@@ -164,7 +164,7 @@ To prevent double-assignment or overlapping memberships if two staff members cli
 
 ## 5. Roadmap ("If More Time")
 
--   **Frontend Performance**: Usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders.
+-   **Frontend Performance**: Usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders; virtualization of the members list (e.g. `@tanstack/react-virtual`) for large datasets to keep scroll and render cost constant.
 -   **Security Hardening**: Strict CORS policies to restrict origins and Header security (Helmet).
 -   **Backend Resilience**: Rate limiting (DoS protection) and optimized Database Connection Pooling.
 -   **Comprehensive Testing Strategy**: Unit (Jest), Integration (Supertest), and E2E (Playwright) coverage to ensure system stability.
