@@ -10,19 +10,6 @@ A full-stack member management system built with **React**, **Node.js**, **TypeS
 
 ---
 
-## ⚙️ Environment variables
-
-Copy the example file and adjust as needed:
-
-```bash
-cp .env.example .env
-```
-
-- **Backend (Option B – local dev):** You need a `.env` at the project root (or in `backend/`) with `DATABASE_URL` and optionally `PORT`. See `.env.example`.
-- **Postgres in Docker:** The database container gets its settings from `docker-compose.yml`, which uses defaults (`memberapp` / `postgres` / `postgres`). You do **not** need a `.env` for Postgres to run. If you create a `.env` and set `POSTGRES_PASSWORD` (or `POSTGRES_USER` / `POSTGRES_DB`), Docker Compose will use those values instead, and the backend container will connect with the same credentials.
-
----
-
 ## 🚀 Local development & running
 
 Choose one of the following methods to run the app.
@@ -41,6 +28,16 @@ docker compose up --build
 
 ### Option B: Hybrid Local Development (Recommended for Coding)
 Run the DB in Docker, but run Frontend/Backend locally for hot-reloading.
+## ⚙️ Environment variables
+
+Copy the example file and adjust as needed:
+
+```bash
+cp .env.example .env
+```
+
+- **Backend (Option B – local dev):** You need a `.env`  in `backend/` with `DATABASE_URL`, `PORT` and NODE_ENV See `.env.example`.
+---
 
 #### 1. Start Database
 ```bash
