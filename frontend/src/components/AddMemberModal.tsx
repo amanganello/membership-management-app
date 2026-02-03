@@ -69,6 +69,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                                 <input
                                     id="nameInput"
                                     type="text"
+                                    autoComplete="off"
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="John Doe"
@@ -87,6 +88,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                                 <input
                                     id="emailInput"
                                     type="text"
+                                    autoComplete="off"
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="john@example.com"

@@ -184,6 +184,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                             min={minStartDate}
                                             onChange={(e) => setStartDate(e.target.value)}
                                             className="w-full px-3 py-2 border rounded-lg"
+                                            autoComplete="off"
                                             required
                                         />
                                     </div>
