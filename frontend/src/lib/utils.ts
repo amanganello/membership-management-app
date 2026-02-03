@@ -5,6 +5,17 @@ import { z } from 'zod';
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
+
+/**
+ * Returns YYYY-MM-DD in local time
+ */
+export function getLocalDateString(date: Date = new Date()): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Date formatting
 export function formatDate(date: string | Date | number): string {
     if (!date) return '';
@@ -38,7 +49,7 @@ export function calculateNextDay(dateString: string): string {
 
 
 export function calculateMinStartDate(currentEndDate?: string): string {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     if (currentEndDate) {
         const nextStart = calculateNextDay(currentEndDate);
         return nextStart > today ? nextStart : today;
@@ -74,7 +85,7 @@ export function getMembershipStatus(membership: {
     endDate: string;
     cancelledAt: string | null;
 }): MembershipStatus {
-    const today = new Date().toISOString().split('T')[0]!;
+    const today = getLocalDateString();
 
     // Normalize DB dates to YYYY-MM-DD (remove time part)
     const startDate = membership.startDate.split('T')[0]!;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
-import { formatDate, formatDateTime, calculateMinStartDate } from '@/lib/utils';
+import { formatDate, formatDateTime, calculateMinStartDate, getLocalDateString } from '@/lib/utils';
 import { UI_TEXT } from '@/lib/constants';
 import { MembershipItem } from './MembershipItem';
 
@@ -55,7 +55,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
         try {
             await cancelMembership.mutateAsync({
                 id: membershipId,
-                data: { cancelDate: new Date().toISOString().split('T')[0]! },
+                data: { cancelDate: getLocalDateString() },
             });
         } catch {
             // Error handled by React Query
