@@ -146,7 +146,7 @@ erDiagram
 1.  **Active Membership Definition**: `start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE`.
 2.  **One Active Membership Rule**: Enforced by Database-level exclusion constraint.
 3.  **Check-in Authorization**: Only members with an active membership can check in.
-4.  **Delayed Cancellation**: Sets `cancelled_at` but does NOT change `end_date`. Member retains access until paid period ends.
+4.  **Delayed Cancellation**: Sets `cancelled_at` but does NOT change `end_date`. Member retains access until paid period ends. `cancelled_at` represents the date the cancellation was scheduled/requested; access remains valid until `end_date`.
 5.  **Validation Rules**:
     -   **Member**: Valid email format; name 1-255 characters.
     -   **Plans**: `monthly_cost >= 0`; `duration_unit` in (day, month, year).
