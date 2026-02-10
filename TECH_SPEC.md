@@ -4,15 +4,15 @@
 
 | Method | Endpoint | Action | Payload / Params |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/members` | List Members | `?q=search`, `?page=1` |
+| `GET` | `/members` | List Members | `?q=search` (optional; pagination not implemented) |
 | `POST` | `/members` | Create Member | `{ name, email }` |
 | `GET` | `/members/:id` | Get Summary | - |
 | `GET` | `/plans` | List Plans | - |
 | `POST` | `/memberships` | Assign Plan | `{ memberId, planId, startDate }` |
-| `PATCH` | `/memberships/:id/cancel` | Cancel | - |
+| `PATCH` | `/memberships/:id/cancel` | Cancel | `{ cancelDate }` (YYYY-MM-DD, required) |
 | `POST` | `/checkins` | Record Visit | `{ memberId }` |
 
-**Standard Response:** JSON. Errors return `{ error: { code, message } }`.
+**Standard Response:** JSON. Errors return `{ error: { code, message, statusCode, requestId? } }`.
 
 ### API Examples
 
@@ -67,9 +67,13 @@
 ```
 
 **`PATCH /memberships/:id/cancel`**
+- **Request (body required):**
+```json
+{ "cancelDate": "2026-02-01" }
+```
 - **Response (`200 OK`):**
 ```json
-{ "id": "m-2", "cancelledAt": "2026-02-01T14:12:00Z" }
+{ "id": "m-2", "memberId": "uuid-123", "planId": "p-1", "startDate": "2026-02-01", "endDate": "2026-03-01", "cancelledAt": "2026-02-01T14:12:00Z", "createdAt": "...", "updatedAt": "..." }
 ```
 
 **`POST /checkins`**
@@ -83,7 +87,7 @@
 ```
 - **Error (`400 Bad Request` - No Active Plan):**
 ```json
-{ "error": { "code": "VALIDATION_ERROR", "message": "No active membership" } }
+{ "error": { "code": "VALIDATION_ERROR", "message": "Member does not have an active membership. Check-in denied.", "statusCode": 400 } }
 ```
 
 ---

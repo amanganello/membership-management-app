@@ -36,7 +36,7 @@ CREATE INDEX idx_members_email ON members(email);
 -- MEMBERSHIPS
 -- ============================================
 -- Business Rule: A member can have at most ONE active membership at a time.
--- Active = endDate > CURRENT_DATE
+-- Active = start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE
 -- Enforced via EXCLUSION CONSTRAINT on date ranges.
 
 CREATE TABLE memberships (

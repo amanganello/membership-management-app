@@ -133,9 +133,9 @@ Staff clicks Member → System aggregates profile, status, and stats.
 
 4. SERVICE LAYER
    └── memberService.getSummary(id)
-   └── PARALLEL FETCHING:
+   └── FETCHING:
        ├── memberRepository.findById(id)
-       ├── membershipRepository.findActiveByMemberId(id)
+       ├── membershipRepository.findAllByMemberId(id) → active = membership where start <= today <= end
        └── checkinRepository.getStatsByMemberId(id)
 
 5. RESPONSE_ASSEMBLY
@@ -195,9 +195,9 @@ Staff searches for member → Selects member → Clicks "Check In" → Success T
    └── Extracts memberId from request body
 
 6. SERVICE LAYER
-   └── checkinService.recordCheckin(memberId)
+   └── checkinService.recordCheckin(data) with data.memberId
    └── Validates member exists
-   └── Validates membership is active (endDate >= CURRENT_DATE)
+   └── Validates membership is active (startDate <= today <= endDate)
    └── Creates timestamp
 
 7. DATABASE INSERT
@@ -220,7 +220,7 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     Staff->>React: Type "Alice" in Search
-    React->>API: GET /api/members?query=Alice
+    React->>API: GET /api/members?q=Alice
     API-->>React: [Member List]
     Staff->>React: Select "Alice"
     React->>React: Show Member Card (Status)
