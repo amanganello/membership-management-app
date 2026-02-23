@@ -5,6 +5,7 @@ module.exports = {
     extensionsToTreatAsEsm: ['.ts'],
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
+        '^@/(.*)\\.js$': '<rootDir>/src/$1.ts',
         '^@memberapp/shared$': '<rootDir>/../shared/src/index.ts',
     },
     transform: {

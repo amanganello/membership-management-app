@@ -1,6 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
-import logger from '../lib/logger.js';
+import logger from '@/lib/logger.js';
 
 dotenv.config();
 

@@ -1,9 +1,9 @@
-import { getBusinessDate } from '../utils/date.js';
-import { membershipRepository } from '../repositories/membershipRepository.js';
-import { memberRepository } from '../repositories/memberRepository.js';
-import { planRepository } from '../repositories/planRepository.js';
-import type { Membership, AssignMembershipDto } from '../types/index.js';
-import { NotFoundError, ValidationError, ConflictError } from '../types/index.js';
+import { getBusinessDate } from '@/utils/date.js';
+import { membershipRepository } from '@/repositories/membershipRepository.js';
+import { memberRepository } from '@/repositories/memberRepository.js';
+import { planRepository } from '@/repositories/planRepository.js';
+import type { Membership, AssignMembershipDto } from '@/types/index.js';
+import { NotFoundError, ValidationError, ConflictError } from '@/types/index.js';
 
 function addDuration(startDate: string, value: number, unit: 'day' | 'month' | 'year'): string {
     const date = new Date(startDate);

@@ -1,9 +1,9 @@
-import { memberRepository } from '../repositories/memberRepository.js';
-import { membershipRepository } from '../repositories/membershipRepository.js';
-import { checkinRepository } from '../repositories/checkinRepository.js';
-import type { Member, MemberSummary, CreateMemberDto } from '../types/index.js';
-import { NotFoundError, ValidationError } from '../types/index.js';
-import { getBusinessDate } from '../utils/date.js';
+import { memberRepository } from '@/repositories/memberRepository.js';
+import { membershipRepository } from '@/repositories/membershipRepository.js';
+import { checkinRepository } from '@/repositories/checkinRepository.js';
+import type { Member, MemberSummary, CreateMemberDto } from '@/types/index.js';
+import { NotFoundError, ValidationError } from '@/types/index.js';
+import { getBusinessDate } from '@/utils/date.js';
 
 export const memberService = {
     async create(data: CreateMemberDto): Promise<Member> {

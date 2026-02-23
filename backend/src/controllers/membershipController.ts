@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { membershipService } from '../services/membershipService.js';
-import type { AssignMembershipDto, CancelMembershipDto } from '../types/index.js';
+import { membershipService } from '@/services/membershipService.js';
+import type { AssignMembershipDto, CancelMembershipDto } from '@/types/index.js';
 
 export const membershipController = {
     async assign(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -1,5 +1,5 @@
-import pool from '../config/database.js';
-import type { Member, CreateMemberDto } from '../types/index.js';
+import pool from '@/config/database.js';
+import type { Member, CreateMemberDto } from '@/types/index.js';
 
 export const memberRepository = {
     async create(data: CreateMemberDto): Promise<Member> {

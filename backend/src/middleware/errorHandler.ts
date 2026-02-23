@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AppError } from '../types/index.js';
-import logger from '../lib/logger.js';
+import { AppError } from '@/types/index.js';
+import logger from '@/lib/logger.js';
 
 interface ErrorResponse {
     error: {

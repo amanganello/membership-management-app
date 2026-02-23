@@ -2,7 +2,7 @@
  * Returns the current date in the business timezone as YYYY-MM-DD.
  * This ensures that "today" respects the local business day, regardless of server UTC time.
  */
-import { APP_CONFIG } from '../config/constants.js';
+import { APP_CONFIG } from '@/config/constants.js';
 
 export function getBusinessDate(): string {
     // Current date in business timezone

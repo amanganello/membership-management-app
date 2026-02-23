@@ -1,5 +1,5 @@
-import pool from '../config/database.js';
-import type { Checkin, CreateCheckinDto } from '../types/index.js';
+import pool from '@/config/database.js';
+import type { Checkin, CreateCheckinDto } from '@/types/index.js';
 
 interface CheckinStats {
     lastCheckinAt: string | null;

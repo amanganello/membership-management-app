@@ -2,10 +2,10 @@ import express, { type Request } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { pinoHttp } from 'pino-http';
-import routes from './routes/index.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import { requestIdMiddleware } from './middleware/requestId.js';
-import logger from './lib/logger.js';
+import routes from '@/routes/index.js';
+import { errorHandler } from '@/middleware/errorHandler.js';
+import { requestIdMiddleware } from '@/middleware/requestId.js';
+import logger from '@/lib/logger.js';
 
 dotenv.config();
 

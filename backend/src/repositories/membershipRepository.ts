@@ -1,6 +1,6 @@
-import pool from '../config/database.js';
-import type { Membership, AssignMembershipDto } from '../types/index.js';
-import { APP_CONFIG } from '../config/constants.js';
+import pool from '@/config/database.js';
+import type { Membership, AssignMembershipDto } from '@/types/index.js';
+import { APP_CONFIG } from '@/config/constants.js';
 
 interface ActiveMembershipInfo {
     id: string;

@@ -4,7 +4,7 @@ import {
     cancelMembershipSchema,
     createCheckinSchema,
     uuidParamSchema,
-} from '../validators.js';
+} from '@/middleware/validators.js';
 
 describe('Zod Validators', () => {
     describe('createMemberSchema', () => {

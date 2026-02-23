@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { NotFoundError, ValidationError } from '../../types/index.js';
+import { NotFoundError, ValidationError } from '@/types/index.js';
 
 // Mock the repositories before importing the service
 jest.unstable_mockModule('../../repositories/checkinRepository.js', () => ({

@@ -1,5 +1,5 @@
-import pool from '../config/database.js';
-import type { Plan } from '../types/index.js';
+import pool from '@/config/database.js';
+import type { Plan } from '@/types/index.js';
 
 export const planRepository = {
     async findAll(): Promise<Plan[]> {

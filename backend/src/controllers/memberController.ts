@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { memberService } from '../services/memberService.js';
-import type { CreateMemberDto } from '../types/index.js';
+import { memberService } from '@/services/memberService.js';
+import type { CreateMemberDto } from '@/types/index.js';
 
 export const memberController = {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {

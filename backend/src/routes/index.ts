@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import { memberController } from '../controllers/memberController.js';
-import { planController } from '../controllers/planController.js';
-import { membershipController } from '../controllers/membershipController.js';
-import { checkinController } from '../controllers/checkinController.js';
-import { validate, validateParams } from '../middleware/validateRequest.js';
+import { memberController } from '@/controllers/memberController.js';
+import { planController } from '@/controllers/planController.js';
+import { membershipController } from '@/controllers/membershipController.js';
+import { checkinController } from '@/controllers/checkinController.js';
+import { validate, validateParams } from '@/middleware/validateRequest.js';
 import {
     createMemberSchema,
     assignMembershipSchema,
     cancelMembershipSchema,
     createCheckinSchema,
     uuidParamSchema
-} from '../middleware/validators.js';
+} from '@/middleware/validators.js';
 
 const router = Router();
 

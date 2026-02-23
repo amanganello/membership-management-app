@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { AppError } from '../types/index.js';
+import { AppError } from '@/types/index.js';
 
 // Zod validation middleware factory
 export const validate = (schema: z.ZodSchema) => {
