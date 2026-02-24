@@ -47,7 +47,7 @@ CREATE TABLE memberships (
     end_date DATE NOT NULL,    -- "Active" means current_date BETWEEN start_date AND end_date
     -- "Cancelled" means cancelled_at IS NOT NULL
     cancelled_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
     -- Validate start_date <= end_date (allows single-day passes)
