@@ -30,8 +30,6 @@ CREATE TABLE members (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_members_email ON members(email);
-
 -- ============================================
 -- MEMBERSHIPS
 -- ============================================
