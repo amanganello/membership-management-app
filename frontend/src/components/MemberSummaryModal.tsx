@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useMemberSummary } from '@/hooks/useMemberSummary';
 import { usePlans } from '@/hooks/usePlans';
 import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships';
@@ -20,14 +20,6 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
     const [selectedPlanId, setSelectedPlanId] = useState('');
     const [startDate, setStartDate] = useState('');
     const [showAssignForm, setShowAssignForm] = useState(false);
-
-    useEffect(() => {
-        if (!memberId) {
-            // setSelectedPlanId('');
-            // setStartDate('');
-            setShowAssignForm(false);
-        }
-    }, [memberId]);
 
     if (!memberId) return null;
 

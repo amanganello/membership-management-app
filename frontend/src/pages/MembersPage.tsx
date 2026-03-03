@@ -63,6 +63,7 @@ export function MembersPage() {
 
             {/* Member Summary Modal */}
             <MemberSummaryModal
+                key={selectedMemberId ?? 'closed'}
                 memberId={selectedMemberId}
                 onClose={() => setSelectedMemberId(null)}
             />
