@@ -50,7 +50,7 @@ If you hit an error, **read the logs**. Do not blindly patch code.
 
 ### A. Backend (Express + TS)
 
-- **Validation:** Use a library (like Zod) for all API inputs.
+- **Validation:** Use a library Zod for all API inputs.
 - **Error Handling:** Pass all async errors to `next(err)`. Never swallow errors.
 - **Database:**
   - Use Migration files (SQL) for all schema changes.
