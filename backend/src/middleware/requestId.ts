@@ -1,12 +1,10 @@
 import { randomUUID } from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
 
-// Extend Express Request type
-declare global {
-    namespace Express {
-        interface Request {
-            id: string;
-        }
+// Extend Express Request type via module augmentation
+declare module 'express-serve-static-core' {
+    interface Request {
+        id: string;
     }
 }
 
