@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateMember } from '@/hooks/useMembers';
 import { createMemberSchema, type CreateMemberInput } from '@/lib/utils';
@@ -16,6 +16,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
         register,
         handleSubmit,
         reset,
+        control,
         formState: { errors, isSubmitting }
     } = useForm<CreateMemberInput>({
         resolver: zodResolver(createMemberSchema),
@@ -24,6 +25,10 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
             email: ''
         }
     });
+
+    const name = useWatch({ control, name: 'name', defaultValue: '' });
+    const email = useWatch({ control, name: 'email', defaultValue: '' });
+    const hasContent = (name?.trim() ?? '') !== '' && (email?.trim() ?? '') !== '';
 
     if (!isOpen) return null;
 
@@ -40,7 +45,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
     const handleClose = () => {
         reset();
         onClose();
-    }
+    };
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -118,7 +123,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                             </button>
                             <button
                                 type="submit"
-                                disabled={isSubmitting || createMember.isPending}
+                                disabled={!hasContent || isSubmitting || createMember.isPending}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
                             >
                                 {isSubmitting || createMember.isPending ? 'Creating...' : 'Create Member'}
