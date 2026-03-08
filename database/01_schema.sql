@@ -60,7 +60,6 @@ CREATE TABLE memberships (
 );
 
 CREATE INDEX idx_memberships_member_id ON memberships(member_id);
-CREATE INDEX idx_memberships_dates ON memberships(start_date, end_date);
 
 -- ============================================
 -- CHECK-INS
@@ -72,7 +71,6 @@ CREATE TABLE checkins (
 );
 
 CREATE INDEX idx_checkins_member_id ON checkins(member_id);
-CREATE INDEX idx_checkins_timestamp ON checkins(checked_in_at);
 
 -- ============================================
 -- AUTO-UPDATE TIMESTAMPS
