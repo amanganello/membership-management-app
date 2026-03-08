@@ -43,6 +43,7 @@ export function formatDateTime(date: string | Date | number): string {
         day: '2-digit',
         year: 'numeric',
         hour: 'numeric',
+        minute: 'numeric',
         second: 'numeric',
     });
 }

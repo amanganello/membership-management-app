@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MemberSelector } from '@/components/MemberSelector';
+import { XIcon } from '@/components/XIcon';
 import { useCreateCheckin } from '@/hooks/useCheckins';
 import type { Member } from '@memberapp/shared';
 
@@ -68,7 +69,7 @@ export function CheckinPage() {
                                         className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                         aria-label="Clear selection"
                                     >
-                                        X
+                                        <XIcon className="size-5" />
                                     </button>
                                 </div>
                                 <button

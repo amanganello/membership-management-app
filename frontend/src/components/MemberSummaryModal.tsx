@@ -5,6 +5,8 @@ import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships
 import { formatDate, formatDateTime, calculateMinStartDate, getLocalDateString } from '@/lib/utils';
 import { UI_TEXT } from '@/lib/constants';
 import { MembershipItem } from './MembershipItem';
+import { ChevronDown } from './ChevronDown';
+import { XIcon } from './XIcon';
 
 interface MemberSummaryModalProps {
     memberId: string | null;
@@ -85,8 +87,9 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        aria-label="Close"
                     >
-                        X
+                        <XIcon className="size-5" />
                     </button>
 
                     {isLoading && <div className="text-center py-8">Loading...</div>}
@@ -146,26 +149,31 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                                         aria-label="Close"
                                     >
-                                        <span className="text-lg">X</span>
+                                        <XIcon className="size-5" />
                                     </button>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
-                                        <select
-                                            value={selectedPlanId}
-                                            onChange={(e) => {
-                                                setSelectedPlanId(e.target.value);
-                                            }}
-                                            className="w-full px-3 py-2 border rounded-lg"
-                                            required
-                                        >
-                                            <option value="">Select a plan</option>
-                                            {plans?.map((plan) => (
-                                                <option key={plan.id} value={plan.id}>
-                                                    {plan.name} - ${plan.monthlyCost}
-                                                    {plan.durationUnit !== 'month' ? ` / ${plan.durationValue} ${plan.durationUnit}` : '/mo'}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div className="relative">
+                                            <select
+                                                value={selectedPlanId}
+                                                onChange={(e) => {
+                                                    setSelectedPlanId(e.target.value);
+                                                }}
+                                                className="w-full pl-3 pr-10 py-2 border rounded-lg appearance-none"
+                                                required
+                                            >
+                                                <option value="">Select a plan</option>
+                                                {plans?.map((plan) => (
+                                                    <option key={plan.id} value={plan.id}>
+                                                        {plan.name} - ${plan.monthlyCost}
+                                                        {plan.durationUnit !== 'month' ? ` / ${plan.durationValue} ${plan.durationUnit}` : '/mo'}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                                                <ChevronDown className="size-5" />
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <div>
@@ -199,7 +207,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
 
                                     <button
                                         type="submit"
-                                        disabled={assignMembership.isPending}
+                                        disabled={!selectedPlanId || !startDate || assignMembership.isPending}
                                         className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                                     >
                                         {assignMembership.isPending ? 'Adding...' : 'Add Membership'}
