@@ -28,7 +28,7 @@ export function CheckinPage() {
 
         try {
             await createCheckin.mutateAsync({ memberId: selectedMember.id });
-            setMessage({ type: 'success', text: `✅ ${selectedMember.name} checked in successfully!` });
+            setMessage({ type: 'success', text: `${selectedMember.name} checked in successfully!` });
             setSelectedMember(null);
         } catch (err) {
             setMessage({
@@ -68,7 +68,7 @@ export function CheckinPage() {
                                         className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                         aria-label="Clear selection"
                                     >
-                                        ✕
+                                        X
                                     </button>
                                 </div>
                                 <button
@@ -76,7 +76,7 @@ export function CheckinPage() {
                                     disabled={createCheckin.isPending}
                                     className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 cursor-pointer"
                                 >
-                                    {createCheckin.isPending ? 'Checking in...' : '✅ Check In'}
+                                    {createCheckin.isPending ? 'Checking in...' : 'Check In'}
                                 </button>
                             </div>
                         </form>

@@ -51,7 +51,7 @@ export function MembershipItem({ membership, onCancel, isCanceling }: Membership
                 )}
             </div>
             <p className="text-sm text-gray-500">
-                {formatDate(membership.startDate)} → {formatDate(membership.endDate)}
+                {formatDate(membership.startDate)} - {formatDate(membership.endDate)}
             </p>
             {isCancelled && (
                 <p className="text-xs text-yellow-700 mt-1">

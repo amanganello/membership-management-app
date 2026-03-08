@@ -86,7 +86,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                         onClick={onClose}
                         className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
                     >
-                        ✕
+                        X
                     </button>
 
                     {isLoading && <div className="text-center py-8">Loading...</div>}
@@ -146,7 +146,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                                         aria-label="Close"
                                     >
-                                        <span className="text-lg">✕</span>
+                                        <span className="text-lg">X</span>
                                     </button>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>

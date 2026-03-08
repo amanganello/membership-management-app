@@ -2,7 +2,7 @@
 
 A full-stack member management system built with **React**, **Node.js**, **TypeScript**, and **PostgreSQL**.
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Docker Desktop** (Required for Database)
 - **Node.js** (v20.20.0 or higher)
@@ -10,7 +10,7 @@ A full-stack member management system built with **React**, **Node.js**, **TypeS
 
 ---
 
-## 🚀 Local development & running
+## Local development & running
 
 Choose one of the following methods to run the app.
 
@@ -28,7 +28,7 @@ docker compose up --build
 
 ### Option B: Hybrid Local Development (Recommended for Coding)
 Run the DB in Docker, but run Frontend/Backend locally for hot-reloading.
-## ⚙️ Environment variables
+## Environment variables
 
 Copy the example file and adjust as needed:
 
@@ -60,7 +60,7 @@ npm run dev
 
 ---
 
-## 🛠 Troubleshooting
+## Troubleshooting
 
 **Database not seeding?**
 If you need to reset the database (delete all data and re-seed):

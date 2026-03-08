@@ -2,8 +2,8 @@ import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-    { to: '/', label: 'Members', icon: '👥' },
-    { to: '/checkin', label: 'Check-in', icon: '✅' },
+    { to: '/', label: 'Members', icon: '' },
+    { to: '/checkin', label: 'Check-in', icon: '' },
 ];
 
 interface LayoutProps {
@@ -16,7 +16,7 @@ export function Layout({ children }: LayoutProps) {
             <aside className="w-full lg:w-64 bg-gray-900 text-white flex flex-col shrink-0">
                 <div className="p-4 lg:p-6 flex lg:block items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-bold">🏋️ FitMember</h1>
+                        <h1 className="text-xl font-bold">FitMember</h1>
                         <p className="hidden lg:block text-sm text-gray-400 mt-1">Management System</p>
                     </div>
                 </div>
@@ -35,7 +35,7 @@ export function Layout({ children }: LayoutProps) {
                                 )
                             }
                         >
-                            <span>{item.icon}</span>
+                            {item.icon && <span>{item.icon}</span>}
                             <span className="lg:inline">{item.label}</span>
                         </NavLink>
                     ))}

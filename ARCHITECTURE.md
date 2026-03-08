@@ -232,7 +232,7 @@ sequenceDiagram
     DB-->>API: New record
     API-->>React: 201 { id, memberId, checkedInAt }
     React->>React: Clear loading
-    React-->>Staff: Show success toast ✓
+    React-->>Staff: Show success toast
 ```
 
 ---
