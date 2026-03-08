@@ -75,23 +75,6 @@ CREATE INDEX idx_checkins_member_id ON checkins(member_id);
 CREATE INDEX idx_checkins_timestamp ON checkins(checked_in_at);
 
 -- ============================================
--- HELPER VIEW: Active Memberships
--- ============================================
-CREATE VIEW active_memberships AS
-SELECT 
-    m.id AS membership_id,
-    m.member_id,
-    mb.name AS member_name,
-    mb.email AS member_email,
-    p.name AS plan_name,
-    m.start_date,
-    m.end_date
-FROM memberships m
-JOIN members mb ON m.member_id = mb.id
-JOIN plans p ON m.plan_id = p.id
-WHERE m.end_date >= CURRENT_DATE;
-
--- ============================================
 -- AUTO-UPDATE TIMESTAMPS
 -- ============================================
 -- PostgreSQL does NOT auto-update updated_at like MySQL.
