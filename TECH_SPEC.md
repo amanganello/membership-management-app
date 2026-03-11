@@ -168,9 +168,16 @@ To prevent double-assignment or overlapping memberships if two staff members cli
 
 ## 5. Roadmap ("If More Time")
 
--   **Frontend Performance**: Usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders; virtualization of the members list (e.g. `@tanstack/react-virtual`) for large datasets to keep scroll and render cost constant.
+-   **Frontend**:
+    -   *Route-Level Error Boundaries*: One `<ErrorBoundary>` wraps the entire `<App />`. If any route throws a render error, the entire application is replaced by the fallback — the user cannot navigate to other, unaffected pages. Route-level error boundaries (via React Router's `errorElement` or per-route `<ErrorBoundary>` wrappers) would isolate failures.
+    -   *Performance*: Usage of `useCallback`, `useMemo`, and `React.memo` to prevent unnecessary re-renders; virtualization of the members list (e.g. `@tanstack/react-virtual`) for large datasets to keep scroll and render cost constant.
+    -   *Optimistic Updates (TanStack Query)*: Implement the `onMutate` / rollback / `onSettled` pattern for check-in mutations to provide instant UI feedback. Check-ins are high-frequency, low-risk actions where perceived latency matters most.
 -   **Security Hardening**: Strict CORS policies to restrict origins and Header security (Helmet).
--   **Backend Resilience**: Rate limiting (DoS protection) and optimized Database Connection Pooling.
--   **Comprehensive Testing Strategy**: Unit (Jest), Integration (Supertest), and E2E (Playwright) coverage to ensure system stability.
+-   **Backend Resilience**:
+    -   *Connection Pooling*: For multi-instance deployments, introduce PgBouncer as an external connection pooler to consolidate backend connections.
+    -   *Pagination on Members List*: `GET /members` returns every record in a single response. For any dataset beyond a few hundred members this will degrade API response time, memory usage, and frontend render cost. Cursor-based (keyset) pagination using `id` or `join_date` is the recommended approach to avoid offset-drift and enable efficient scrolling.
+    -   *Rate Limiting*: The API has zero rate-limiting middleware. The `POST /checkins` endpoint is especially vulnerable as the highest-frequency, publicly-facing action. A library such as `express-rate-limit` with per-IP or per-member sliding windows should be introduced.
+    -   *Transactions for Membership Assignment*: The `assign` flow (validate member → fetch plan → insert membership) runs as individual queries without a wrapping `BEGIN`/`COMMIT`. While the PostgreSQL exclusion constraint catches overlapping date ranges, the check-then-insert pattern has a TOCTOU window where other invariants (member existence, plan state) are not atomically guaranteed. The validation + insert should be wrapped in a database transaction.
+-   **Comprehensive Testing Strategy**: Unit (Jest/Vitest), Integration (Supertest), and E2E (Playwright) coverage. Critical E2E flows: add member (form → list update, duplicate email error), assign membership (plan selection → summary update, overlap rejection), and check-in (active member success, inactive member denial).
 -   **API Documentation**: Automated OpenAPI/Swagger generation for type-safe client consumption.
--   **Observability**: Centralized logging (Pino) and error tracking (Sentry).
+-   **Observability**: Centralized log aggregation and error tracking (Sentry). Structured request logging via Pino is already in place.
