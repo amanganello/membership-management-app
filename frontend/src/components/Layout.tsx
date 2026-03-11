@@ -2,8 +2,8 @@ import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-    { to: '/', label: 'Members', icon: '' },
-    { to: '/checkin', label: 'Check-in', icon: '' },
+    { to: '/', label: 'Members' },
+    { to: '/checkin', label: 'Check-in' },
 ];
 
 interface LayoutProps {
@@ -35,7 +35,6 @@ export function Layout({ children }: LayoutProps) {
                                 )
                             }
                         >
-                            {item.icon && <span>{item.icon}</span>}
                             <span className="lg:inline">{item.label}</span>
                         </NavLink>
                     ))}

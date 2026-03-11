@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { NotFoundError, ValidationError } from '../../types/index.js';
+import { NotFoundError, ConflictError } from '../../types/index.js';
 
 // Mock the repositories before importing the service
 jest.unstable_mockModule('../../repositories/memberRepository.js', () => ({
@@ -63,12 +63,12 @@ describe('memberService', () => {
             expect(result).toEqual(createdMember);
         });
 
-        it('should throw ValidationError when email already exists', async () => {
+        it('should throw ConflictError when email already exists', async () => {
             mockMemberRepository.emailExists.mockResolvedValue(true);
 
             await expect(memberService.create(validMemberData))
                 .rejects
-                .toThrow(ValidationError);
+                .toThrow(ConflictError);
 
             expect(mockMemberRepository.create).not.toHaveBeenCalled();
         });
