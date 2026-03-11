@@ -68,7 +68,7 @@ export const membershipRepository = {
             SET cancelled_at = $2::date,
                 updated_at = NOW()
             WHERE id = $1
-              AND end_date >= (NOW() AT TIME ZONE '${APP_CONFIG.TIMEZONE}')::date 
+              AND end_date >= (NOW() AT TIME ZONE $3)::date
               AND cancelled_at IS NULL
             RETURNING id,
                      member_id as "memberId",
@@ -79,7 +79,7 @@ export const membershipRepository = {
                      created_at as "createdAt",
                      updated_at as "updatedAt";
         `;
-        const { rows } = await pool.query<Membership>(query, [id, cancelDate]);
+        const { rows } = await pool.query<Membership>(query, [id, cancelDate, APP_CONFIG.TIMEZONE]);
         return rows[0] || null;
     }
 };
