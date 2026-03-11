@@ -1,6 +1,6 @@
 import type { MembershipWithPlan } from '@memberapp/shared';
 import { formatDate, getMembershipStatus } from '@/lib/utils';
-import { MEMBERSHIP_STATUS_TEXT } from '@/lib/constants';
+import { MEMBERSHIP_STATUS_TEXT, UI_TEXT } from '@/lib/constants';
 
 interface MembershipItemProps {
     membership: MembershipWithPlan;
@@ -31,11 +31,11 @@ export function MembershipItem({ membership, onCancel, isCanceling }: Membership
                         </span>
                     ) : isFuture ? (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                            Future
+                            {MEMBERSHIP_STATUS_TEXT.FUTURE}
                         </span>
                     ) : (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            Expired
+                            {MEMBERSHIP_STATUS_TEXT.EXPIRED}
                         </span>
                     )}
                     <span className="font-medium text-gray-900">{membership.planName}</span>
@@ -46,7 +46,7 @@ export function MembershipItem({ membership, onCancel, isCanceling }: Membership
                         disabled={isCanceling}
                         className="text-xs text-red-600 hover:text-red-700 underline cursor-pointer disabled:opacity-50"
                     >
-                        {isCanceling ? 'Canceling...' : 'Cancel'}
+                        {isCanceling ? UI_TEXT.CANCELING_BUTTON : UI_TEXT.CANCEL_MEMBERSHIP_BUTTON}
                     </button>
                 )}
             </div>

@@ -5,6 +5,7 @@ import { useAssignMembership, useCancelMembership } from '@/hooks/useMemberships
 import { formatDate, formatDateTime, calculateMinStartDate, getLocalDateString } from '@/lib/utils';
 import { UI_TEXT } from '@/lib/constants';
 import { MembershipItem } from './MembershipItem';
+import { Alert } from './Alert';
 import { ChevronDown } from './ChevronDown';
 import { XIcon } from './XIcon';
 
@@ -59,6 +60,7 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
     const handleToggleAssignForm = () => {
         const nextState = !showAssignForm;
         setShowAssignForm(nextState);
+        assignMembership.reset();
 
         if (nextState) {
             // Auto-fill with the valid minimum date (Today or Next Day after active plan)
@@ -141,6 +143,13 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                 )}
                             </div>
 
+                            {cancelMembership.isError && (
+                                <Alert
+                                    variant="error"
+                                    message={cancelMembership.error instanceof Error ? cancelMembership.error.message : 'Failed to cancel membership'}
+                                />
+                            )}
+
                             {showAssignForm && (
                                 <form onSubmit={handleAssign} className="relative bg-blue-50 rounded-lg p-4 space-y-3">
                                     <button
@@ -156,9 +165,10 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                         <div className="relative">
                                             <select
                                                 value={selectedPlanId}
-                                                onChange={(e) => {
-                                                    setSelectedPlanId(e.target.value);
-                                                }}
+                                            onChange={(e) => {
+                                                setSelectedPlanId(e.target.value);
+                                                if (assignMembership.isError) assignMembership.reset();
+                                            }}
                                                 className="w-full pl-3 pr-10 py-2 border rounded-lg appearance-none"
                                                 required
                                             >
@@ -182,7 +192,10 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                             type="date"
                                             value={startDate}
                                             min={minStartDate}
-                                            onChange={(e) => setStartDate(e.target.value)}
+                                            onChange={(e) => {
+                                                setStartDate(e.target.value);
+                                                if (assignMembership.isError) assignMembership.reset();
+                                            }}
                                             className="w-full px-3 py-2 border rounded-lg"
                                             autoComplete="off"
                                             required
@@ -203,6 +216,13 @@ export function MemberSummaryModal({ memberId, onClose }: MemberSummaryModalProp
                                                 );
                                             })()}
                                         </div>
+                                    )}
+
+                                    {assignMembership.isError && (
+                                        <Alert
+                                            variant="error"
+                                            message={assignMembership.error instanceof Error ? assignMembership.error.message : 'Failed to assign membership'}
+                                        />
                                     )}
 
                                     <button

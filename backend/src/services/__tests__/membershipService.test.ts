@@ -6,8 +6,6 @@ jest.unstable_mockModule('../../repositories/membershipRepository.js', () => ({
     membershipRepository: {
         create: jest.fn(),
         findById: jest.fn(),
-        findActiveByMemberId: jest.fn(),
-        hasActiveMembership: jest.fn(),
         cancel: jest.fn(),
     }
 }));
@@ -20,7 +18,6 @@ jest.unstable_mockModule('../../repositories/memberRepository.js', () => ({
 
 jest.unstable_mockModule('../../repositories/planRepository.js', () => ({
     planRepository: {
-        exists: jest.fn(),
         findById: jest.fn(),
     }
 }));
@@ -61,7 +58,6 @@ describe('membershipService', () => {
 
         it('should create membership with valid data', async () => {
             mockMemberRepository.exists.mockResolvedValue(true);
-            mockPlanRepository.exists.mockResolvedValue(true);
             mockPlanRepository.findById.mockResolvedValue({
                 id: 'plan-uuid',
                 name: 'Basic Plan',
@@ -75,7 +71,6 @@ describe('membershipService', () => {
 
             const result = await membershipService.assign(validAssignData);
 
-            expect(mockMemberRepository.exists).toHaveBeenCalledWith('member-uuid');
             expect(mockMemberRepository.exists).toHaveBeenCalledWith('member-uuid');
             expect(mockPlanRepository.findById).toHaveBeenCalledWith('plan-uuid');
             expect(mockMembershipRepository.create).toHaveBeenCalledWith(validAssignData);

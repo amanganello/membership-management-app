@@ -65,14 +65,6 @@ export function calculateMinStartDate(currentEndDate?: string): string {
     return today;
 }
 
-export const createValidationHandler = (message: string) => (e: React.FormEvent<HTMLInputElement>) => {
-    (e.target as HTMLInputElement).setCustomValidity(message);
-};
-
-export const clearValidationHandler = (e: React.FormEvent<HTMLInputElement>) => {
-    (e.target as HTMLInputElement).setCustomValidity('');
-};
-
 export const createMemberSchema = z.object({
     name: z.string().min(1, 'Name is required').max(255, 'Name too long'),
     email: z.string().email('Invalid email address').max(255, 'Email too long')

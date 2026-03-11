@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MemberSelector } from '@/components/MemberSelector';
 import { XIcon } from '@/components/XIcon';
+import { Alert } from '@/components/Alert';
 import { useCreateCheckin } from '@/hooks/useCheckins';
 import type { Member } from '@memberapp/shared';
 
@@ -84,15 +85,11 @@ export function CheckinPage() {
                     )}
 
                     {message && (
-                        <div
-                            role="alert"
-                            className={`mt-4 p-4 rounded-lg ${message.type === 'success'
-                                ? 'bg-green-50 text-green-800'
-                                : 'bg-red-50 text-red-800'
-                                }`}
-                        >
-                            {message.text}
-                        </div>
+                        <Alert
+                            variant={message.type}
+                            message={message.text}
+                            className="mt-4"
+                        />
                     )}
                 </div>
             </div>

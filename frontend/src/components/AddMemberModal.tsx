@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateMember } from '@/hooks/useMembers';
 import { createMemberSchema, type CreateMemberInput } from '@/lib/utils';
 import { ApiRequestError } from '@/services/api';
+import { Alert } from './Alert';
 
 interface AddMemberModalProps {
     isOpen: boolean;
@@ -31,6 +32,10 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
     const email = useWatch({ control, name: 'email', defaultValue: '' });
     const hasContent = (name?.trim() ?? '') !== '' && (email?.trim() ?? '') !== '';
 
+    const isConflictError = createMember.isError
+        && createMember.error instanceof ApiRequestError
+        && createMember.error.code === 'CONFLICT';
+
     if (!isOpen) return null;
 
     const onSubmit = async (data: CreateMemberInput) => {
@@ -45,6 +50,7 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
 
     const handleClose = () => {
         reset();
+        createMember.reset();
         onClose();
     };
 
@@ -79,7 +85,9 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="John Doe"
-                                    {...register('name')}
+                                    {...register('name', {
+                                        onChange: () => { if (createMember.isError) createMember.reset(); }
+                                    })}
                                 />
                                 {errors.name && (
                                     <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -90,27 +98,30 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
                                 <label htmlFor="emailInput" className="block text-sm font-medium text-gray-700 mb-1">
                                     Email
                                 </label>
-                                {/* Changed type="email" to type="text" to enable custom validation fully via Zod */}
                                 <input
                                     id="emailInput"
                                     type="text"
                                     autoComplete="off"
-                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email || isConflictError ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="john@example.com"
-                                    {...register('email')}
+                                    {...register('email', {
+                                        onChange: () => { if (createMember.isError) createMember.reset(); }
+                                    })}
                                 />
                                 {errors.email && (
                                     <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
                                 )}
+                                {isConflictError && (
+                                    <p className="mt-1 text-sm text-red-600">A member with this email already exists.</p>
+                                )}
                             </div>
 
-                            {createMember.isError && (
-                                <div role="alert" className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                                    {createMember.error instanceof ApiRequestError && createMember.error.code === 'CONFLICT'
-                                        ? 'A member with this email already exists. Please use a different email.'
-                                        : (createMember.error instanceof Error ? createMember.error.message : 'Failed to create member')}
-                                </div>
+                            {createMember.isError && !isConflictError && (
+                                <Alert
+                                    variant="error"
+                                    message={createMember.error instanceof Error ? createMember.error.message : 'Failed to create member'}
+                                />
                             )}
                         </div>
 

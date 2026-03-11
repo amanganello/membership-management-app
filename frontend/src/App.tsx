@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from './components/Layout';
 import { MembersPage } from './pages/MembersPage';
 import { CheckinPage } from './pages/CheckinPage';
-import './index.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {

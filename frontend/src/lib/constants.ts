@@ -2,6 +2,8 @@ export const MEMBERSHIP_STATUS_TEXT = {
     ACTIVE: 'Active',
     ENDS_TODAY: 'Ends Today',
     SCHEDULED_TO_CANCEL: 'Scheduled to Cancel',
+    FUTURE: 'Future',
+    EXPIRED: 'Expired',
 };
 
 export const UI_TEXT = {
