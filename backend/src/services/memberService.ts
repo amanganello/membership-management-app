@@ -2,7 +2,7 @@ import { memberRepository } from '../repositories/memberRepository.js';
 import { membershipRepository } from '../repositories/membershipRepository.js';
 import { checkinRepository } from '../repositories/checkinRepository.js';
 import type { Member, MemberSummary, CreateMemberDto } from '../types/index.js';
-import { NotFoundError, ValidationError } from '../types/index.js';
+import { NotFoundError, ConflictError } from '../types/index.js';
 import { getBusinessDate } from '../utils/date.js';
 
 export const memberService = {
@@ -10,10 +10,17 @@ export const memberService = {
         // Check for duplicate email
         const emailExists = await memberRepository.emailExists(data.email);
         if (emailExists) {
-            throw new ValidationError('Email already exists');
+            throw new ConflictError('Email already exists');
         }
 
-        return memberRepository.create(data);
+        try {
+            return await memberRepository.create(data);
+        } catch (error: unknown) {
+            if (error instanceof Error && 'code' in error && error.code === '23505') {
+                throw new ConflictError('Email already exists');
+            }
+            throw error;
+        }
     },
 
     async list(searchQuery?: string): Promise<Member[]> {

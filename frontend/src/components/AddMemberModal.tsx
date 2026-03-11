@@ -2,6 +2,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateMember } from '@/hooks/useMembers';
 import { createMemberSchema, type CreateMemberInput } from '@/lib/utils';
+import { ApiRequestError } from '@/services/api';
 
 interface AddMemberModalProps {
     isOpen: boolean;
@@ -106,8 +107,8 @@ export function AddMemberModal({ isOpen, onClose }: AddMemberModalProps) {
 
                             {createMember.isError && (
                                 <div role="alert" className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                                    {createMember.error instanceof Error && createMember.error.message.includes('Email already exists')
-                                        ? 'Account registration could not be completed. Please contact support or try another email.'
+                                    {createMember.error instanceof ApiRequestError && createMember.error.code === 'CONFLICT'
+                                        ? 'A member with this email already exists. Please use a different email.'
                                         : (createMember.error instanceof Error ? createMember.error.message : 'Failed to create member')}
                                 </div>
                             )}
