@@ -22,7 +22,8 @@ export const memberRepository = {
     },
 
     async search(query: string): Promise<Member[]> {
-        const searchPattern = `%${query}%`;
+        const escaped = query.replace(/[%_]/g, '\\$&');
+        const searchPattern = `%${escaped}%`;
         const result = await pool.query(
             `SELECT id, name, email, join_date as "joinDate", created_at as "createdAt", updated_at as "updatedAt"
        FROM members 
